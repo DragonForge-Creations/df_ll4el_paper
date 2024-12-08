@@ -1,8 +1,8 @@
 package me.quickscythe.paper.ll4el.listeners;
 
-import me.quickscythe.ll4el.LastLife;
-import me.quickscythe.ll4el.utils.chat.MessageUtils;
-import me.quickscythe.ll4el.utils.misc.managers.PlayerManager;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.paper.ll4el.Initializer;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerListener implements Listener {
-    public PlayerListener(LastLife plugin) {
+    public PlayerListener(Initializer plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

@@ -1,6 +1,7 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot;
 
-import org.json2.JSONObject;
+
+import json2.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;

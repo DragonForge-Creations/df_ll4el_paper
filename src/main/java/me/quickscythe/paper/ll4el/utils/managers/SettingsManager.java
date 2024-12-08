@@ -1,7 +1,7 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
+import json2.JSONObject;
 import org.bukkit.OfflinePlayer;
-import org.json2.JSONObject;
 
 public class SettingsManager {
 

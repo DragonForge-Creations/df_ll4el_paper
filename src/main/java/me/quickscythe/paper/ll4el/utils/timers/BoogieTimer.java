@@ -1,9 +1,9 @@
 package me.quickscythe.paper.ll4el.utils.timers;
 
-import me.quickscythe.ll4el.utils.CoreUtils;
-import me.quickscythe.ll4el.utils.chat.MessageUtils;
-import me.quickscythe.ll4el.utils.misc.managers.BoogieManager;
-import me.quickscythe.ll4el.utils.misc.managers.PlayerManager;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

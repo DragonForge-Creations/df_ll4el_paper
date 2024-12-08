@@ -1,6 +1,6 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
-import me.quickscythe.ll4el.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.CoreUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.Scoreboard;

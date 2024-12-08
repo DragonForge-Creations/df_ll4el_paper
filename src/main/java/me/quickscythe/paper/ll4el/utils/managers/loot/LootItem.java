@@ -1,10 +1,10 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot;
 
-import me.quickscythe.ll4el.utils.chat.MessageUtils;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.json2.JSONObject;
+import json2.JSONObject;
 
 import java.util.Random;
 

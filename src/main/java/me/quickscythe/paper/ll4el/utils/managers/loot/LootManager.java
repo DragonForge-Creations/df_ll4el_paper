@@ -1,8 +1,8 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot;
 
-import me.quickscythe.ll4el.utils.CoreUtils;
-import me.quickscythe.ll4el.utils.misc.managers.config.ConfigFile;
-import me.quickscythe.ll4el.utils.misc.managers.config.ConfigFileManager;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.config.ConfigFile;
+import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
@@ -17,8 +17,8 @@ public class LootManager {
     private static ConfigFile drops;
 
     public static void start() {
-        drops = ConfigFileManager.getFile("loot_drops");
-        ConfigFile tables = ConfigFileManager.getFile("loot_tables", CoreUtils.plugin().getResource("loot_tables.json"));
+        drops = ConfigFileManager.getFile("df_ll4el_paper/loot_drops");
+        ConfigFile tables = ConfigFileManager.getFile("df_ll4el_paper/loot_tables");
         for (String s : tables.getData().keySet()) {
             tables_map.put(s, new LootTable(tables.getData().getJSONObject(s)));
         }

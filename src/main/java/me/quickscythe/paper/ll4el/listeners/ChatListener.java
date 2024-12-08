@@ -1,16 +1,16 @@
 package me.quickscythe.paper.ll4el.listeners;
 
-import me.quickscythe.ll4el.LastLife;
-import me.quickscythe.ll4el.utils.chat.ChatManager;
-import me.quickscythe.ll4el.utils.chat.MessageUtils;
-import me.quickscythe.ll4el.utils.chat.placeholder.PlaceholderUtils;
-import me.quickscythe.ll4el.utils.misc.managers.PartyManager;
+import me.quickscythe.dragonforge.utils.chat.ChatManager;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
+import me.quickscythe.paper.ll4el.Initializer;
+import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
-    public ChatListener(LastLife plugin) {
+    public ChatListener(Initializer plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

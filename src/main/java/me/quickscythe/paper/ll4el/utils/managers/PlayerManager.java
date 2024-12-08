@@ -1,11 +1,11 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
-import me.quickscythe.ll4el.utils.CoreUtils;
-import me.quickscythe.ll4el.utils.chat.MessageUtils;
-import me.quickscythe.ll4el.utils.misc.managers.config.ConfigFile;
-import me.quickscythe.ll4el.utils.misc.managers.config.ConfigFileManager;
+import json2.JSONObject;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.dragonforge.utils.config.ConfigFile;
+import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import org.bukkit.OfflinePlayer;
-import org.json2.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,10 +1,10 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
-import me.quickscythe.ll4el.utils.CoreUtils;
-import me.quickscythe.ll4el.utils.misc.runnables.BoogieTimer;
+import json2.JSONObject;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.paper.ll4el.utils.timers.BoogieTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.json2.JSONObject;
 
 import java.util.*;
 
