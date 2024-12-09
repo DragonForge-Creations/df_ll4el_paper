@@ -5,6 +5,7 @@ import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.config.ConfigFile;
 import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
+import me.quickscythe.paper.ll4el.utils.Utils;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ public class PlayerManager {
     private static ConfigFile config;
 
     public static void start() {
-        config = ConfigFileManager.getFile("players");
+        CoreUtils.logger().log("Loading player data...");
+        config = ConfigFileManager.getFile(Utils.plugin(), "players");
 
     }
 

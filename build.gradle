@@ -3,13 +3,13 @@ import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id ("io.papermc.paperweight.userdev") version "1.7.2"
+    id("io.papermc.paperweight.userdev") version "1.7.2"
     id("xyz.jpenilla.run-paper") version "2.3.0"
 }
 
 
-group = "$project.group"
-version = "$project.plugin_version"
+group = "$group"
+version = "$plugin_version-$minecraft_version-$build_status-B$build_number"
 
 repositories {
     mavenCentral()
@@ -31,11 +31,13 @@ repositories {
 
 dependencies {
     paperweight.paperDevBundle("${minecraft_version}-${paper_build}")
-    implementation "me.quickscythe:df_core_paper:${df_core_version}"
-    implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+    implementation("me.quickscythe:df_core_paper:${df_core_version}")
 
 
 }
+
+
+
 paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 def targetJavaVersion = Integer.parseInt(java_version)
 java {
@@ -72,4 +74,8 @@ publishing {
             from components.java
         }
     }
+}
+
+runServer {
+    pluginJars.from(configurations.runtimeClasspath)
 }
