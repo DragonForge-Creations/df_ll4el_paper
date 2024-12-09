@@ -157,7 +157,7 @@ public class AdminCommands implements CommandExecutor {
                             sender.sendMessage(MessageUtils.getMessage("cmd.error.no_perm"));
                             return true;
                         }
-                        LootManager.dropLoot(new Random().nextBoolean() ? LootManager.DropType.SHULKER : LootManager.DropType.OTHER);
+                        DataManager.getConfigManager("loot", LootManager.class).dropLoot(new Random().nextBoolean() ? LootManager.DropType.SHULKER : LootManager.DropType.OTHER);
                     }
                     if (args[1].equalsIgnoreCase("create")) {
                         if (!sender.hasPermission("lastlife.admin.loot.drop")) {
@@ -170,7 +170,7 @@ public class AdminCommands implements CommandExecutor {
                         }
                         String name = args[2];
                         Location loc = player.getTargetBlock(null, 5).getLocation();
-                        LootManager.createDrop(name, loc);
+                        DataManager.getConfigManager("loot", LootManager.class).createDrop(name, loc);
                         player.sendMessage(MessageUtils.getMessage("cmd.loot.create.success", name, "(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")"));
                     }
                 }
@@ -220,7 +220,7 @@ public class AdminCommands implements CommandExecutor {
         int page = args.length >= 2 ? Integer.parseInt(args[1]) : 1;
         StringBuilder config = new StringBuilder();
         List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier = new Pagifier(((BoogieManager) DataManager.getConfigManager("boogies")).getBoogies(), 27);
+        Pagifier pagifier = new Pagifier(DataManager.getConfigManager("boogies", BoogieManager.class).getBoogies(), 27);
         int page_size;
         try {
             page_size = pagifier.getPage(page).size();
@@ -385,28 +385,7 @@ public class AdminCommands implements CommandExecutor {
         return inv;
     }
 
-    private GuiInventory generateStatusMenu() {
-        GuiInventory inv = new GuiInventory(new Date().getTime() + "", "&e&lStatus Menu", 27, "XXXXXXXXX" + "XAXXBXXCX" + "XXXXXXXXX");
-        GuiItem party = new GuiItem("A");
-        party.setMaterial(Material.STICK).setCustomModelData(109).setDisplayName("&a&lParty").setLore("&7Search by party");
-        party.addAction(new JSONObject().put("action", "command").put("command", "status party"));
-        inv.addItem(party);
 
-        GuiItem boogie = new GuiItem("B");
-        boogie.setMaterial(Material.STICK).setCustomModelData(110).setDisplayName("&c&lBoogie").setLore("&7Search for boogies");
-        boogie.addAction(new JSONObject().put("action", "command").put("command", "status boogie"));
-        inv.addItem(boogie);
-
-        GuiItem player = new GuiItem("C");
-        player.setMaterial(Material.STICK).setCustomModelData(110).setDisplayName("&e&lPlayer").setLore("&7List all players");
-        player.addAction(new JSONObject().put("action", "command").put("command", "status player"));
-        inv.addItem(player);
-
-        inv.addItem(new GuiItem("X").setMaterial(Material.AIR));
-
-        return inv;
-
-    }
 
     private GuiInventory generatePlayerStatus(OfflinePlayer target) {
         PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
