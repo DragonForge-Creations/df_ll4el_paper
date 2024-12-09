@@ -1,18 +1,21 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
 import json2.JSONObject;
+import me.quickscythe.dragonforge.utils.storage.ConfigManager;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import org.bukkit.OfflinePlayer;
 
 public class SettingsManager {
 
     public static Settings getSettings(OfflinePlayer player){
-        return new Settings(PlayerManager.getPlayerData(player).getJSONObject("settings"));
+        return new Settings(((PlayerManager) DataManager.getConfigManager("players")).getPlayerData(player).getJSONObject("settings"));
     }
 
     public static void setSettings(OfflinePlayer player, Settings settings){
-        JSONObject pd = PlayerManager.getPlayerData(player);
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
+        JSONObject pd = playerManager.getPlayerData(player);
         pd.put("settings", settings.json());
-        PlayerManager.setPlayerData(player,pd);
+        playerManager.setPlayerData(player,pd);
 
     }
 

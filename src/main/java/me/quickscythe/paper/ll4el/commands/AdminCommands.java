@@ -5,6 +5,7 @@ import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.dragonforge.utils.gui.GuiItem;
 import me.quickscythe.dragonforge.utils.gui.GuiManager;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.commands.listeners.AdminTabCompleter;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
@@ -38,6 +39,7 @@ public class AdminCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
         if (cmd.getName().equalsIgnoreCase("status")) {
             if (!sender.hasPermission("lastlife.admin.status")) {
                 sender.sendMessage(MessageUtils.getMessage("cmd.error.no_perm"));
@@ -59,10 +61,10 @@ public class AdminCommands implements CommandExecutor {
                     if (args.length == 1) {
                         GuiManager.openGui(player, generatePlayerList(args));
                     } else {
-                        if (Bukkit.getOfflinePlayer(PlayerManager.getUUID(args[1])) == null) {
+                        if (Bukkit.getOfflinePlayer(playerManager.getUUID(args[1])) == null) {
                             sender.sendMessage(MessageUtils.colorize("&cSorry that player couldn't be found. If the player is offline their username must be typed exactly."));
                         } else
-                            GuiManager.openGui(player, generatePlayerStatus(Bukkit.getOfflinePlayer(Objects.requireNonNull(PlayerManager.getUUID(args[1])))));
+                            GuiManager.openGui(player, generatePlayerStatus(Bukkit.getOfflinePlayer(Objects.requireNonNull(playerManager.getUUID(args[1])))));
                     }
                 }
 
@@ -99,7 +101,7 @@ public class AdminCommands implements CommandExecutor {
                         return true;
                     }
                     int amount = args.length == 3 ? Integer.parseInt(args[2]) : 1;
-                    BoogieManager.rollBoogies(amount, true);
+                    ((BoogieManager) DataManager.getConfigManager("boogies")).rollBoogies(amount, true);
                     sender.sendMessage(MessageUtils.getMessage("cmd.boogie.roll", amount));
                 }
                 if (args[1].equalsIgnoreCase("remove")) {
@@ -111,12 +113,12 @@ public class AdminCommands implements CommandExecutor {
                         sender.sendMessage(MessageUtils.colorize("&a/" + label + " boogie remove <player> &7- Removes a player's boogie status"));
                         return true;
                     }
-                    if (Bukkit.getPlayer(args[2]) == null && PlayerManager.getUUID(args[2]) == null) {
+                    if (Bukkit.getPlayer(args[2]) == null && playerManager.getUUID(args[2]) == null) {
                         sender.sendMessage(MessageUtils.getMessage("cmd.error.no_player"));
                         return true;
                     }
-                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(PlayerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
-                    PlayerManager.removeBoogie(player);
+                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(playerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
+                    playerManager.removeBoogie(player);
                     sender.sendMessage(MessageUtils.getMessage("cmd.boogie.remove.success", player.getName()));
                 }
                 if (args[1].equalsIgnoreCase("set")) {
@@ -128,12 +130,12 @@ public class AdminCommands implements CommandExecutor {
                         sender.sendMessage(MessageUtils.colorize("&a/" + label + " boogie set <player> &7- Sets a player as a boogie."));
                         return true;
                     }
-                    if (Bukkit.getPlayer(args[2]) == null && PlayerManager.getUUID(args[2]) == null) {
+                    if (Bukkit.getPlayer(args[2]) == null && playerManager.getUUID(args[2]) == null) {
                         sender.sendMessage(MessageUtils.getMessage("cmd.error.no_player", args[2]));
                         return true;
                     }
-                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(PlayerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
-                    PlayerManager.setBoogie(player);
+                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(playerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
+                    playerManager.setBoogie(player);
                     sender.sendMessage(MessageUtils.getMessage("cmd.boogie.set.success", player.getName()));
                 }
 
@@ -196,14 +198,14 @@ public class AdminCommands implements CommandExecutor {
                         sender.sendMessage(MessageUtils.colorize("&a/" + label + " life add|set <player> [amount] &7- Edits a player's lives. Amount can be negative. Default amount=1."));
                         return true;
                     }
-                    if (Bukkit.getPlayer(args[2]) == null && PlayerManager.getUUID(args[2]) == null) {
+                    if (Bukkit.getPlayer(args[2]) == null && playerManager.getUUID(args[2]) == null) {
                         sender.sendMessage(MessageUtils.getMessage("cmd.error.no_player"));
                         return true;
                     }
-                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(PlayerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
+                    OfflinePlayer player = Bukkit.getPlayer(args[2]) == null ? Bukkit.getOfflinePlayer(playerManager.getUUID(args[2])) : Bukkit.getPlayer(args[2]);
                     int amount = args.length == 3 ? 1 : Integer.parseInt(args[3]);
-                    if (args[1].equalsIgnoreCase("add")) PlayerManager.editLife(player, amount, animation);
-                    if (args[1].equalsIgnoreCase("set")) PlayerManager.setLife(player, amount);
+                    if (args[1].equalsIgnoreCase("add")) playerManager.editLife(player, amount, animation);
+                    if (args[1].equalsIgnoreCase("set")) playerManager.setLife(player, amount);
                     sender.sendMessage(MessageUtils.getMessage("cmd.life.edit.success", player.getName()));
                 }
             }
@@ -218,7 +220,7 @@ public class AdminCommands implements CommandExecutor {
         int page = args.length >= 2 ? Integer.parseInt(args[1]) : 1;
         StringBuilder config = new StringBuilder();
         List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier = new Pagifier(BoogieManager.getBoogies(), 27);
+        Pagifier pagifier = new Pagifier(((BoogieManager) DataManager.getConfigManager("boogies")).getBoogies(), 27);
         int page_size;
         try {
             page_size = pagifier.getPage(page).size();
@@ -281,6 +283,7 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private GuiInventory generatePartyList(Player sender, String[] args) {
+        PartyManager partyManager = (PartyManager) DataManager.getConfigManager("parties");
         //If party == "none" list parties, otherwise list all players in named party
         GuiInventory inv;
         String party = args.length >= 2 ? args[1] : "none";
@@ -292,7 +295,7 @@ public class AdminCommands implements CommandExecutor {
         int pages;
         if (party.equalsIgnoreCase("none") || party.matches("-?\\d+")) {
             page = party.equalsIgnoreCase("none") ? 1 : Integer.parseInt(party);
-            pagifier = new Pagifier(PartyManager.getParties(), 27);
+            pagifier = new Pagifier(partyManager.getParties(), 27);
             page_size = pagifier.getPage(page).size();
             pages = pagifier.getPages();
             for (int i = 0; i < page_size; i++) {
@@ -323,7 +326,7 @@ public class AdminCommands implements CommandExecutor {
             page = args.length == 3 ? Integer.parseInt(args[2]) : 1;
 
             try {
-                pagifier = new Pagifier(PartyManager.getPlayers(party), 27);
+                pagifier = new Pagifier(partyManager.getPlayers(party), 27);
                 page_size = pagifier.getPage(page).size();
                 pages = pagifier.getPages();
                 for (int i = 0; i < page_size; i++) {
@@ -406,6 +409,7 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private GuiInventory generatePlayerStatus(OfflinePlayer target) {
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
         GuiInventory inv = new GuiInventory(target.getName(), "&e&lStatus&7: " + target.getName(), 36, "AXXXXXXXX" + "XXXXXXDXX" + "XXBXXXCXX" + "XXXXXXEXX");
         GuiItem head = new GuiItem("A");
         head.setMaterial(Material.PLAYER_HEAD);
@@ -416,14 +420,14 @@ public class AdminCommands implements CommandExecutor {
 
         GuiItem boogie = new GuiItem("B");
         boogie.setDisplayName("&cBoogie Status");
-        boogie.setLore("&7Click to toggle.", "&7Current status: " + (PlayerManager.isBoogie(target) ? "&ayes" : "&cno"));
+        boogie.setLore("&7Click to toggle.", "&7Current status: " + (playerManager.isBoogie(target) ? "&ayes" : "&cno"));
         boogie.setMaterial(Material.STICK).setCustomModelData(101);
-        boogie.addAction(new JSONObject().put("action", "command").put("command", PlayerManager.isBoogie(target) ? "lastlife boogie remove " + target.getName() : "lastlife boogie set " + target.getName()));
+        boogie.addAction(new JSONObject().put("action", "command").put("command", playerManager.isBoogie(target) ? "lastlife boogie remove " + target.getName() : "lastlife boogie set " + target.getName()));
         boogie.addAction(new JSONObject().put("action", "command").put("command", "status player " + target.getName()));
         inv.addItem(boogie);
 
         GuiItem heart = new GuiItem("C");
-        heart.setDisplayName("&aLives&7: " + PlayerManager.getLives(target)).setMaterial(Material.TOTEM_OF_UNDYING).setCustomModelData(1000);
+        heart.setDisplayName("&aLives&7: " + playerManager.getLives(target)).setMaterial(Material.TOTEM_OF_UNDYING).setCustomModelData(1000);
         inv.addItem(heart);
 
         GuiItem up = new GuiItem("D");
@@ -443,10 +447,11 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private GuiInventory generatePlayerList(String[] args) {
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
         int page = args.length >= 2 ? Integer.parseInt(args[1]) : 1;
         StringBuilder config = new StringBuilder();
         List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier = new Pagifier(PlayerManager.getPlayers(), 27);
+        Pagifier pagifier = new Pagifier(playerManager.getPlayers(), 27);
         for (int i = 0; i < pagifier.getPage(page).size(); i++) {
 
             UUID uid = (UUID) pagifier.getPage(page).get(i);
@@ -507,12 +512,13 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private void setupPlayerInfo(GuiItem item, OfflinePlayer target) {
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
         item.setMaterial(Material.PLAYER_HEAD);
         item.setSkullData(new GuiItem.SkullData(target.getUniqueId()));
 
         item.setDisplayName("&a" + target.getName());
-        int lives = PlayerManager.getLives(target);
-        item.setLore("&7Online: " + (target.isOnline() ? "&ayes" : "&cno"), "&7Boogie: " + (PlayerManager.isBoogie(target) ? "&ayes" : "&cno"), "&7Lives: " + (lives > 3 ? "&2" : lives == 3 ? "&a" : lives == 2 ? "&e" : lives == 1 ? "&c" : "&7") + lives);
+        int lives = playerManager.getLives(target);
+        item.setLore("&7Online: " + (target.isOnline() ? "&ayes" : "&cno"), "&7Boogie: " + (playerManager.isBoogie(target) ? "&ayes" : "&cno"), "&7Lives: " + (lives > 3 ? "&2" : lives == 3 ? "&a" : lives == 2 ? "&e" : lives == 1 ? "&c" : "&7") + lives);
 
         JSONArray array = new JSONArray();
         JSONObject action1 = new JSONObject();

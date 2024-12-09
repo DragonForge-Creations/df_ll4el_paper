@@ -1,18 +1,13 @@
 package me.quickscythe.paper.ll4el;
 
 import me.quickscythe.dragonforge.commands.CommandManager;
-import me.quickscythe.dragonforge.commands.executors.UpdateCommand;
-import me.quickscythe.dragonforge.utils.CoreUtils;
-import me.quickscythe.paper.ll4el.commands.AdminCommands;
+import me.quickscythe.paper.ll4el.commands.LastLifeCommand;
 import me.quickscythe.paper.ll4el.commands.PartyCommand;
-import me.quickscythe.paper.ll4el.commands.PlayerCommands;
+import me.quickscythe.paper.ll4el.commands.SettingsCommand;
+import me.quickscythe.paper.ll4el.commands.StatusCommand;
 import me.quickscythe.paper.ll4el.listeners.ChatListener;
 import me.quickscythe.paper.ll4el.listeners.PlayerListener;
 import me.quickscythe.paper.ll4el.utils.Utils;
-import me.quickscythe.paper.ll4el.utils.managers.LifeManager;
-import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
-import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
-import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Initializer extends JavaPlugin {
@@ -26,10 +21,9 @@ public final class Initializer extends JavaPlugin {
         new PlayerListener(this);
 
         new CommandManager.CommandBuilder(new PartyCommand(this)).setDescription("Last Life party command.").setAliases("p").register();
-
-
-        new PlayerCommands(this,"settings", "party");
-        new AdminCommands(this, "inventory", "lastlife", "status");
+        new CommandManager.CommandBuilder(new SettingsCommand(this)).setDescription("Last Life settings command.").setAliases("set").register();
+        new CommandManager.CommandBuilder(new LastLifeCommand(this)).setDescription("Last Life admin command.").setAliases("ll").register();
+        new CommandManager.CommandBuilder(new StatusCommand(this)).setDescription("Last Life status command.").setAliases("st", "s").register();
 
 
     }

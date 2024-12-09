@@ -1,6 +1,7 @@
 package me.quickscythe.paper.ll4el.listeners;
 
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
@@ -18,22 +19,23 @@ public class PlayerListener implements Listener {
 
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e){
-        PlayerManager.checkData(e.getPlayer());
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        ((PlayerManager) DataManager.getConfigManager("players")).checkData(e.getPlayer());
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
-        if (player.getKiller() != null && PlayerManager.isBoogie(player.getKiller()) && !player.equals(player.getKiller()))
-            PlayerManager.removeBoogie(player.getKiller());
-        if (PlayerManager.getLives(player) == 1) {
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
+        if (player.getKiller() != null && playerManager.isBoogie(player.getKiller()) && !player.equals(player.getKiller()))
+            playerManager.removeBoogie(player.getKiller());
+        if (playerManager.getLives(player) == 1) {
             player.setGameMode(GameMode.SPECTATOR);
             player.getWorld().strikeLightningEffect(player.getLocation());
-            String msg = MessageUtils.getMessage("action.elimination",player.getName(),(player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
+            String msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
             Bukkit.broadcastMessage(msg);
         }
-        PlayerManager.removeLife(player);
+        playerManager.removeLife(player);
 
     }
 }

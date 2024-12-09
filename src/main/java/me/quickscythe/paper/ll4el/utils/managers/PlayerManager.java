@@ -3,30 +3,22 @@ package me.quickscythe.paper.ll4el.utils.managers;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
-import me.quickscythe.dragonforge.utils.config.ConfigFile;
-import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
-import me.quickscythe.paper.ll4el.utils.Utils;
+import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class PlayerManager {
-//    private static final File file = new File(CoreUtils.getPlugin().getDataFolder() + "/players.json");
-//    private static JSONObject players = new JSONObject();
+public class PlayerManager extends ConfigManager {
 
-    private static ConfigFile config;
-
-    public static void start() {
-        CoreUtils.logger().log("Loading player data...");
-        config = ConfigFileManager.getFile(Utils.plugin(), "players");
-
+    public PlayerManager(JavaPlugin plugin) {
+        super(plugin, "players");
     }
 
-    public static void checkData(OfflinePlayer player) {
-        if (!config.getData().has(String.valueOf(player.getUniqueId()))) {
+   
+
+    public void checkData(OfflinePlayer player) {
+        if (!config().getData().has(String.valueOf(player.getUniqueId()))) {
             JSONObject pd = new JSONObject();
             pd.put("last_selected", 0);
             pd.put("boogie", false);
@@ -34,7 +26,7 @@ public class PlayerManager {
             pd.put("name", player.getName());
             pd.put("settings", SettingsManager.Settings.defaultSettings());
             pd.put("party", "none");
-            config.getData().put(String.valueOf(player.getUniqueId()), pd);
+            config().getData().put(String.valueOf(player.getUniqueId()), pd);
 
         }
         JSONObject pd = getPlayerData(player);
@@ -43,137 +35,136 @@ public class PlayerManager {
         setScoreboardInfo(player);
     }
 
-    public static void end() {
-        config.save();
+    public void end() {
+        config().save();
     }
 
 
-    @Deprecated
-    public static UUID getUUID(String lastUsername) {
-        for (String sid : config.getData().keySet()) {
-            if (config.getData().getJSONObject(sid).get("name").equals(lastUsername)) return UUID.fromString(sid);
+    public UUID getUUID(String lastUsername) {
+        for (String sid : config().getData().keySet()) {
+            if (config().getData().getJSONObject(sid).get("name").equals(lastUsername)) return UUID.fromString(sid);
         }
         return null;
     }
 
-    public static JSONObject getPlayerData(OfflinePlayer player) {
-        return config.getData().getJSONObject(String.valueOf(player.getUniqueId()));
+    public JSONObject getPlayerData(OfflinePlayer player) {
+        return config().getData().getJSONObject(String.valueOf(player.getUniqueId()));
     }
 
-    public static void setPlayerData(OfflinePlayer player, JSONObject json) {
-        config.getData().put(String.valueOf(player.getUniqueId()), json);
+    public void setPlayerData(OfflinePlayer player, JSONObject json) {
+        config().getData().put(String.valueOf(player.getUniqueId()), json);
     }
 
-    public static String getParty(OfflinePlayer player){
-        return config.getData().getJSONObject(String.valueOf(player.getUniqueId())).getString("party");
+    public String getParty(OfflinePlayer player){
+        return config().getData().getJSONObject(String.valueOf(player.getUniqueId())).getString("party");
     }
 
-    public static void setParty(OfflinePlayer player, String party){
+    public void setParty(OfflinePlayer player, String party){
         setPlayerData(player, getPlayerData(player).put("party",party));
         if(player.isOnline())
-            player.getPlayer().sendMessage(MessageUtils.getMessage("party.join.success", party));
+            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("party.join.success", party));
     }
 
-    public static boolean isBoogie(OfflinePlayer player) {
+    public boolean isBoogie(OfflinePlayer player) {
         return getPlayerData(player).getBoolean("boogie");
     }
 
 
-    public static void removeBoogie(OfflinePlayer player) {
+    public void removeBoogie(OfflinePlayer player) {
         JSONObject pd = getPlayerData(player);
         pd.put("boogie", false);
         pd.put("last_selected", new Date().getTime());
-        if (player.isOnline()) player.getPlayer().sendMessage(MessageUtils.getMessage("message.boogie.cured"));
+        if (player.isOnline()) Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.cured"));
         setPlayerData(player, pd);
     }
 
 
-    public static int getLives(OfflinePlayer player) {
+    public int getLives(OfflinePlayer player) {
         return getPlayerData(player).getInt("lives");
     }
 
-    public static void removeLife(OfflinePlayer player) {
+    public  void removeLife(OfflinePlayer player) {
         editLife(player, -1);
     }
 
 
-    public static void addLife(OfflinePlayer player) {
+    public void addLife(OfflinePlayer player) {
         editLife(player, 1);
     }
 
-    public static void setLife(OfflinePlayer player, int l) {
+    public void setLife(OfflinePlayer player, int l) {
         JSONObject pd = getPlayerData(player);
         pd.put("lives", l);
         setPlayerData(player, pd);
         setScoreboardInfo(player);
     }
 
-    public static void editLife(OfflinePlayer player, int i) {
+    public void editLife(OfflinePlayer player, int i) {
         editLife(player, i, true);
     }
 
-    public static void editLife(OfflinePlayer player, int i, boolean animation) {
+    public void editLife(OfflinePlayer player, int i, boolean animation) {
         int l = getLives(player) + i;
         setLife(player, l);
         if (i > 0 && player.isOnline()) {
             int cmd = 1000 + i;
             if (animation) CoreUtils.playTotemAnimation(player.getPlayer(), cmd);
-            player.getPlayer().sendMessage(MessageUtils.getMessage("message.lives.more", i +""));
+            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.lives.more", i +""));
         }
     }
 
-    private static void setScoreboardInfo(OfflinePlayer player) {
+    private void setScoreboardInfo(OfflinePlayer player) {
         int l = getLives(player);
         if (l == 0) {
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray").addEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red")).removeEntry(Objects.requireNonNull(player.getName()));
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray")).addEntry(player.getName());
         }
         if (l == 1) {
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red").addEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray").removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red")).addEntry(Objects.requireNonNull(player.getName()));
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray")).removeEntry(player.getName());
         }
         if (l == 2) {
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow").addEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray").removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red")).removeEntry(Objects.requireNonNull(player.getName()));
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow")).addEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray")).removeEntry(player.getName());
         }
         if (l == 3) {
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime").addEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray").removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red")).removeEntry(Objects.requireNonNull(player.getName()));
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime")).addEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray")).removeEntry(player.getName());
         }
         if (l > 3) {
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime").removeEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green").addEntry(player.getName());
-            CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray").removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("red")).removeEntry(Objects.requireNonNull(player.getName()));
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("yellow")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("lime")).removeEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("green")).addEntry(player.getName());
+            Objects.requireNonNull(CoreUtils.plugin().getServer().getScoreboardManager().getMainScoreboard().getTeam("gray")).removeEntry(player.getName());
         }
     }
 
-    public static void setBoogie(OfflinePlayer player) {
+    public void setBoogie(OfflinePlayer player) {
         JSONObject pd = getPlayerData(player);
         pd.put("boogie", true);
         pd.put("last_selected", new Date().getTime());
         setPlayerData(player, pd);
         if (SettingsManager.getSettings(player).chat() && player.isOnline())
-            player.getPlayer().sendMessage(MessageUtils.getMessage("message.boogie.chat"));
+            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.chat"));
 
     }
 
-    public static List<UUID> getPlayers() {
+    public List<UUID> getPlayers() {
         List<UUID> uids = new ArrayList<>();
-        for (String sid : config.getData().keySet()) {
+        for (String sid : config().getData().keySet()) {
             uids.add(UUID.fromString(sid));
         }
         return uids;

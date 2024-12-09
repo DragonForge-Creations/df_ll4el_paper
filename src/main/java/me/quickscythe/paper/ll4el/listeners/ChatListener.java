@@ -3,6 +3,7 @@ package me.quickscythe.paper.ll4el.listeners;
 import me.quickscythe.dragonforge.utils.chat.ChatManager;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
 import org.bukkit.event.EventHandler;
@@ -17,8 +18,9 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e){
 
-        if(PartyManager.inPartyChat(e.getPlayer())){
-            PartyManager.handleChat(e.getPlayer(), e.getMessage());
+        PartyManager partyManager = (PartyManager) DataManager.getConfigManager("parties");
+        if(partyManager.inPartyChat(e.getPlayer())){
+            partyManager.handleChat(e.getPlayer(), e.getMessage());
             e.setCancelled(true);
             return;
         }

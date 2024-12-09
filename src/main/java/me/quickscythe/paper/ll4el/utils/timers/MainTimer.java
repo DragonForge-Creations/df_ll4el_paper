@@ -1,6 +1,7 @@
 package me.quickscythe.paper.ll4el.utils.timers;
 
 import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
@@ -14,8 +15,10 @@ import org.bukkit.entity.Player;
 public class MainTimer implements Runnable {
 
     protected Particle.DustOptions dustoptions = new Particle.DustOptions(Color.RED, 1);
+    private final PlayerManager playerManager;
 
     public MainTimer() {
+        this.playerManager = (PlayerManager) DataManager.getConfigManager("players");
 
     }
 
@@ -23,12 +26,12 @@ public class MainTimer implements Runnable {
     public void run() {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (PlayerManager.isBoogie(player)) {
+            if (playerManager.isBoogie(player)) {
                 if (SettingsManager.getSettings(player).particles())
                     player.spawnParticle(Particle.DUST, player.getLocation(), 1, dustoptions);
                 if (SettingsManager.getSettings(player).icon())
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("                                                                                          \ue001").create());
-                if (PlayerManager.getLives(player) < 1) PlayerManager.removeBoogie(player);
+                if (playerManager.getLives(player) < 1) playerManager.removeBoogie(player);
             }
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(Utils.plugin(), this, 0);

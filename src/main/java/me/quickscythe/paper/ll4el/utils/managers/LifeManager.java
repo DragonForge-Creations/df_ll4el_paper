@@ -1,6 +1,7 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
 import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.storage.DataManager;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.Scoreboard;
@@ -11,14 +12,11 @@ public class LifeManager {
 
 
     public static void start() {
-
         setupTeams();
-
-
     }
 
     public static String getLifeColor(OfflinePlayer player) {
-        int lives = PlayerManager.getLives(player);
+        int lives = ((PlayerManager) DataManager.getConfigManager("players")).getLives(player);
         ChatColor color = ChatColor.RESET;
         if (lives > 3) color = ChatColor.DARK_GREEN;
         if (lives == 3) color = ChatColor.GREEN;
