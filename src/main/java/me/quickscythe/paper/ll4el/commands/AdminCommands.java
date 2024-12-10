@@ -47,8 +47,8 @@ public class AdminCommands implements CommandExecutor {
             }
             if (sender instanceof Player player) {
                 if (args.length == 0 || args[0].equalsIgnoreCase("admin")) {
-                    GuiInventory inv = generateStatusMenu();
-                    GuiManager.openGui(player, inv);
+//                    GuiInventory inv =
+//                    GuiManager.openGui(player, inv);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("party")) {
