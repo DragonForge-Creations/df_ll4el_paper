@@ -47,6 +47,7 @@ public class PlayerListener implements Listener {
         if (player.getKiller() != null && playerManager.isBoogie(player.getKiller()) && !player.equals(player.getKiller()))
             playerManager.removeBoogie(player.getKiller());
         if (playerManager.getLives(player) == 1) {
+            e.setCancelled(true);
             player.setGameMode(GameMode.SPECTATOR);
             player.getWorld().strikeLightningEffect(player.getLocation());
             String msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
