@@ -2,6 +2,7 @@ package me.quickscythe.paper.ll4el.utils;
 
 import json2.JSONArray;
 import json2.JSONObject;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.dragonforge.utils.gui.GuiItem;
 import me.quickscythe.dragonforge.utils.gui.GuiManager;
@@ -31,10 +32,39 @@ public class Utils {
         DataManager.registerConfigManager(new LootManager(plugin));
 
         registerGuis();
+        registerMessages();
+
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
 
+    private static void registerMessages() {
+        MessageUtils.addMessage("message.boogie.chat", "&cYou are a Boogie! Kill someone fast to get rid of this effect!");
+        MessageUtils.addMessage("message.boogie.countdown.4", "&c&lBoogie will be selected in...");
+        MessageUtils.addMessage("message.boogie.countdown.3", "&c&l3...");
+        MessageUtils.addMessage("message.boogie.countdown.2", "&c&l2...");
+        MessageUtils.addMessage("message.boogie.countdown.1", "&c&l1...");
+        MessageUtils.addMessage("message.boogie.countdown.0", "&c&lYou are...");
+        MessageUtils.addMessage("message.boogie.countdown.boogie", "&c&la Boogie!");
+        MessageUtils.addMessage("message.boogie.countdown.not", "&a&lNOT a Boogie!");
+        MessageUtils.addMessage("message.boogie.cured", "&aYou've been cured!");
+        MessageUtils.addMessage("action.elimination", "[0] has been eliminated[1]!");
+        MessageUtils.addMessage("cmd.error.player_only","&cSorry, that is a player only command.");
+        MessageUtils.addMessage("message.lives.more", "&aYou've gained [0] lives.");
+        MessageUtils.addMessage("cmd.loot.create.success", "&aSuccessfully created [0] loot drop at [1].");
+        MessageUtils.addMessage("cmd.life.edit.success", "&aSuccessfully edited the lives of [0].");
+        MessageUtils.addMessage("cmd.boogie.set.success", "&a[0] is now a boogie.");
+        MessageUtils.addMessage("cmd.boogie.roll", "&aNow rolling for [0] boogie(s).");
+        MessageUtils.addMessage("cmd.boogie.remove.success", "&a[0] is no longer a boogie.");
+        MessageUtils.addMessage("cmd.party.join.other", "&a[0] is now in the [1] party.");
+        MessageUtils.addMessage("party.join.success", "&aYou have joined the [0] party.");
+        MessageUtils.addMessage("cmd.party.create", "&aSuccessfully created [0] party.");
+        MessageUtils.addMessage("party.chat.join", "&7Party chat: &aon&7.");
+        MessageUtils.addMessage("party.chat.leave", "&7Party chat: &coff&7.");
+        MessageUtils.addMessage("party.chat.no_party", "&cYou aren't in a party.");
+        MessageUtils.addMessage("error.party.no_party", "&c\"[0]\" doesn't seem to exist. Check your spelling and try again.");
+
+    }
     private static void registerGuis() {
         registerSettingsGui();
         registerStatusGui();

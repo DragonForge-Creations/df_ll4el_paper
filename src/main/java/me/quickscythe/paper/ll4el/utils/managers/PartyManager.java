@@ -19,8 +19,7 @@ import java.util.UUID;
 
 public class PartyManager extends ConfigManager {
 
-    static ConfigFile parties;
-    static List<UUID> in_chat = new ArrayList<>();
+    List<UUID> in_chat = new ArrayList<>();
 
     public PartyManager(JavaPlugin plugin) {
         super(plugin, "parties");
@@ -28,20 +27,21 @@ public class PartyManager extends ConfigManager {
 
     public JSONObject createParty(String name) {
         JSONObject party = new JSONObject();
-        parties.getData().put(name, party);
+        config().getData().put(name, party);
+        config().save();
         return party;
     }
 
     public JSONObject getParty(String name) {
         try {
-            return parties.getData().getJSONObject(name);
+            return config().getData().getJSONObject(name);
         } catch (NullPointerException ex) {
             throw new NullPointerException("Couldn't find party: " + name);
         }
     }
 
     public void removeParty(String name) {
-        parties.getData().remove(name);
+        config().getData().remove(name);
     }
 
     public boolean inPartyChat(OfflinePlayer player) {
@@ -74,7 +74,7 @@ public class PartyManager extends ConfigManager {
     }
 
     public List<String> getParties() {
-        return new ArrayList<>(PartyManager.parties.getData().keySet());
+        return new ArrayList<>(config().getData().keySet());
     }
 
     public List<UUID> getPlayers(String party) {

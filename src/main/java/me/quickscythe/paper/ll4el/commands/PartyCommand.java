@@ -128,7 +128,8 @@ public class PartyCommand extends CommandExecutor {
                                 .suggests((context, builder) -> {
                                     CommandSender sender = context.getSource().getSender();
 
-                                    String action = StringArgumentType.getString(context, "action");
+                                    String action = context.getInput().split(" ")[1];
+//                                    String action = StringArgumentType.getString(context, "action");
                                     if (action.equalsIgnoreCase("join") || action.equalsIgnoreCase("leave")) {
                                         if (sender.hasPermission("lastlife.party." + action.toLowerCase())) {
                                             for (String s : ((PartyManager) DataManager.getConfigManager("parties")).getParties()) {
@@ -140,6 +141,9 @@ public class PartyCommand extends CommandExecutor {
                                 })
                                 .executes(context -> {
                                     CommandSender sender = context.getSource().getSender();
+                                    if(!(sender instanceof Player player)){
+                                        return logError(sender, "cmd.error.player_only");
+                                    }
                                     String action = StringArgumentType.getString(context, "action");
                                     String arg2 = StringArgumentType.getString(context, "arg2");
                                     if (action.equalsIgnoreCase("create")) {
@@ -152,7 +156,8 @@ public class PartyCommand extends CommandExecutor {
                                         return Command.SINGLE_SUCCESS;
                                     }
                                     if (action.equalsIgnoreCase("join")) {
-                                        sender.sendMessage(MessageUtils.getMessage("cmd.error.invalid_args"));
+//                                        DataManager.getConfigManager("parties", PartyManager.class).getParty(arg2).
+                                        DataManager.getConfigManager("players", PlayerManager.class).setParty(player, arg2);
                                         return Command.SINGLE_SUCCESS;
                                     }
                                     if (action.equalsIgnoreCase("leave")) {

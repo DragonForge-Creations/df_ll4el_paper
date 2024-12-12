@@ -40,38 +40,38 @@ public class AdminCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        if (cmd.getName().equalsIgnoreCase("status")) {
-            if (!sender.hasPermission("lastlife.admin.status")) {
-                sender.sendMessage(MessageUtils.getMessage("cmd.error.no_perm"));
-                return true;
-            }
-            if (sender instanceof Player player) {
-                if (args.length == 0 || args[0].equalsIgnoreCase("admin")) {
-//                    GuiInventory inv =
-//                    GuiManager.openGui(player, inv);
-                    return true;
-                }
-                if (args[0].equalsIgnoreCase("party")) {
-                    GuiManager.openGui(player, generatePartyList(player, args));
-                }
-                if (args[0].equalsIgnoreCase("boogie")) {
-                    GuiManager.openGui(player, generateBoogieList(args));
-                }
-                if (args[0].equalsIgnoreCase("player")) {
-                    if (args.length == 1) {
-                        GuiManager.openGui(player, generatePlayerList(args));
-                    } else {
-                        if (Bukkit.getOfflinePlayer(playerManager.getUUID(args[1])) == null) {
-                            sender.sendMessage(MessageUtils.colorize("&cSorry that player couldn't be found. If the player is offline their username must be typed exactly."));
-                        } else
-                            GuiManager.openGui(player, generatePlayerStatus(Bukkit.getOfflinePlayer(Objects.requireNonNull(playerManager.getUUID(args[1])))));
-                    }
-                }
-
-            } else {
-                sender.sendMessage(MessageUtils.getMessage("cmd.error.player_only"));
-            }
-        }
+//        if (cmd.getName().equalsIgnoreCase("status")) {
+//            if (!sender.hasPermission("lastlife.admin.status")) {
+//                sender.sendMessage(MessageUtils.getMessage("cmd.error.no_perm"));
+//                return true;
+//            }
+//            if (sender instanceof Player player) {
+//                if (args.length == 0 || args[0].equalsIgnoreCase("admin")) {
+////                    GuiInventory inv =
+////                    GuiManager.openGui(player, inv);
+//                    return true;
+//                }
+//                if (args[0].equalsIgnoreCase("party")) {
+//                    GuiManager.openGui(player, generatePartyList(player, 1));
+//                }
+//                if (args[0].equalsIgnoreCase("boogie")) {
+//                    GuiManager.openGui(player, generateBoogieList(1));
+//                }
+//                if (args[0].equalsIgnoreCase("player")) {
+//                    if (args.length == 1) {
+//                        GuiManager.openGui(player, generatePlayerList(1));
+//                    } else {
+//                        if (Bukkit.getOfflinePlayer(playerManager.getUUID(args[1])) == null) {
+//                            sender.sendMessage(MessageUtils.colorize("&cSorry that player couldn't be found. If the player is offline their username must be typed exactly."));
+//                        } else
+//                            GuiManager.openGui(player, generatePlayerStatus(Bukkit.getOfflinePlayer(Objects.requireNonNull(playerManager.getUUID(args[1])))));
+//                    }
+//                }
+//
+//            } else {
+//                sender.sendMessage(MessageUtils.getMessage("cmd.error.player_only"));
+//            }
+//        }
         if (cmd.getName().equalsIgnoreCase("lastlife")) {
             if (!sender.hasPermission("lastlife.admin")) {
                 sender.sendMessage(MessageUtils.getMessage("cmd.error.no_perm"));
@@ -213,297 +213,5 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
-    private GuiInventory generateBoogieList(String[] args) {
-        //todo:
-        // Parse args to find page. Args will only be page
-        // Pagify and display current boogies
-        int page = args.length >= 2 ? Integer.parseInt(args[1]) : 1;
-        StringBuilder config = new StringBuilder();
-        List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier = new Pagifier(DataManager.getConfigManager("boogies", BoogieManager.class).getBoogies(), 27);
-        int page_size;
-        try {
-            page_size = pagifier.getPage(page).size();
-            for (int i = 0; i < page_size; i++) {
 
-                OfflinePlayer target = Bukkit.getOfflinePlayer((UUID) pagifier.getPage(page).get(i));
-                GuiItem item = new GuiItem(((char) i) + "");
-                setupPlayerInfo(item, target);
-                items.add(item);
-                config.append(item.getIdentifier());
-            }
-        } catch (NullPointerException ex) {
-            page_size=0;
-        }
-
-
-        GuiItem search = new GuiItem("W");
-        search.setMaterial(Material.STICK);
-        search.setCustomModelData(107);
-        search.setDisplayName("&bSearch");
-
-        config.append("X".repeat(Math.max(0, 27 - page_size)));
-        if (page < pagifier.getPages() && page > 1) config.append("XXXYXZXXX");
-        if (page < pagifier.getPages() && page == 1) config.append("XXXXXZXXX");
-        if (page >= pagifier.getPages() && pagifier.getPages() != 1) config.append("XXXYXXXXX");
-        if (page == pagifier.getPages() && page == 1) config.append("XXXXXXXXX");
-        GuiInventory inv = new GuiInventory(new Date().getTime() + "", "&a&lParty List", 36, config.toString());
-        for (GuiItem item : items)
-            inv.addItem(item);
-        GuiItem air = new GuiItem("X");
-        air.setMaterial(Material.AIR);
-        inv.addItem(air);
-
-        GuiItem next = new GuiItem("Z");
-        next.setMaterial(Material.STICK);
-        next.setCustomModelData(103);
-        next.setDisplayName("&aNext Page (" + (page + 1) + "/" + pagifier.getPages() + ")");
-        JSONArray nextArray = new JSONArray();
-        JSONObject nextAction1 = new JSONObject();
-        nextAction1.put("action", "command");
-        nextAction1.put("command", "status boogie " + (page + 1));
-        nextArray.put(nextAction1);
-        next.setActions(nextArray);
-        inv.addItem(next);
-
-        GuiItem prev = new GuiItem("Y");
-        prev.setMaterial(Material.STICK);
-        prev.setCustomModelData(104);
-        prev.setDisplayName("&aPrevious Page (" + (page - 1) + "/" + pagifier.getPages() + ")");
-        JSONArray prevArray = new JSONArray();
-        JSONObject prevAction1 = new JSONObject();
-        prevAction1.put("action", "command");
-        prevAction1.put("command", "status boogie " + (page - 1));
-        prevArray.put(prevAction1);
-        prev.setActions(prevArray);
-        inv.addItem(prev);
-        return inv;
-
-
-    }
-
-    private GuiInventory generatePartyList(Player sender, String[] args) {
-        PartyManager partyManager = (PartyManager) DataManager.getConfigManager("parties");
-        //If party == "none" list parties, otherwise list all players in named party
-        GuiInventory inv;
-        String party = args.length >= 2 ? args[1] : "none";
-        StringBuilder config = new StringBuilder();
-        List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier;
-        int page;
-        int page_size;
-        int pages;
-        if (party.equalsIgnoreCase("none") || party.matches("-?\\d+")) {
-            page = party.equalsIgnoreCase("none") ? 1 : Integer.parseInt(party);
-            pagifier = new Pagifier(partyManager.getParties(), 27);
-            page_size = pagifier.getPage(page).size();
-            pages = pagifier.getPages();
-            for (int i = 0; i < page_size; i++) {
-
-                String pname = (String) pagifier.getPage(page).get(i);
-                GuiItem item = new GuiItem(((char) i) + "");
-                item.setMaterial(Material.RED_WOOL);
-                item.setDisplayName("&a" + pname);
-
-                JSONArray array = new JSONArray();
-                JSONObject action1 = new JSONObject();
-                action1.put("action", "command");
-                action1.put("command", "status party " + pname);
-                array.put(action1);
-                item.setActions(array);
-                items.add(item);
-                config.append(item.getIdentifier());
-            }
-
-
-            GuiItem search = new GuiItem("W");
-            search.setMaterial(Material.STICK);
-            search.setCustomModelData(107);
-            search.setDisplayName("&bSearch");
-
-
-        } else {
-            page = args.length == 3 ? Integer.parseInt(args[2]) : 1;
-
-            try {
-                pagifier = new Pagifier(partyManager.getPlayers(party), 27);
-                page_size = pagifier.getPage(page).size();
-                pages = pagifier.getPages();
-                for (int i = 0; i < page_size; i++) {
-
-                    OfflinePlayer target = Bukkit.getOfflinePlayer((UUID) pagifier.getPage(page).get(i));
-                    GuiItem item = new GuiItem(((char) i) + "");
-                    setupPlayerInfo(item, target);
-
-
-                    items.add(item);
-                    config.append(item.getIdentifier());
-                }
-            } catch (NullPointerException ex) {
-                sender.sendMessage(MessageUtils.getMessage("error.party.no_party", party));
-                page_size=0;
-                pages = 1;
-            }
-
-        }
-        config.append("X".repeat(Math.max(0, 27 - page_size)));
-        if (page < pages && page > 1) config.append("XXXYXZXXX");
-        if (page < pages && page == 1) config.append("XXXXXZXXX");
-        if (page >= pages && pages != 1) config.append("XXXYXXXXX");
-        if (page == pages && page == 1) config.append("XXXXXXXXX");
-        inv = new GuiInventory(new Date().getTime() + "", "&a&lParty List", 36, config.toString());
-        for (GuiItem item : items)
-            inv.addItem(item);
-        GuiItem air = new GuiItem("X");
-        air.setMaterial(Material.AIR);
-        inv.addItem(air);
-
-        GuiItem next = new GuiItem("Z");
-        next.setMaterial(Material.STICK);
-        next.setCustomModelData(103);
-        next.setDisplayName("&aNext Page (" + (page + 1) + "/" + pages + ")");
-        JSONArray nextArray = new JSONArray();
-        JSONObject nextAction1 = new JSONObject();
-        nextAction1.put("action", "command");
-        String pstr = party.equalsIgnoreCase("none") ? "" : party + " ";
-        nextAction1.put("command", "status party " + pstr + (page + 1));
-        nextArray.put(nextAction1);
-        next.setActions(nextArray);
-        inv.addItem(next);
-
-        GuiItem prev = new GuiItem("Y");
-        prev.setMaterial(Material.STICK);
-        prev.setCustomModelData(104);
-        prev.setDisplayName("&aPrevious Page (" + (page - 1) + "/" + pages + ")");
-        JSONArray prevArray = new JSONArray();
-        JSONObject prevAction1 = new JSONObject();
-        prevAction1.put("action", "command");
-        prevAction1.put("command", "status party " + pstr + (page - 1));
-        prevArray.put(prevAction1);
-        prev.setActions(prevArray);
-        inv.addItem(prev);
-        return inv;
-    }
-
-
-
-    private GuiInventory generatePlayerStatus(OfflinePlayer target) {
-        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        GuiInventory inv = new GuiInventory(target.getName(), "&e&lStatus&7: " + target.getName(), 36, "AXXXXXXXX" + "XXXXXXDXX" + "XXBXXXCXX" + "XXXXXXEXX");
-        GuiItem head = new GuiItem("A");
-        head.setMaterial(Material.PLAYER_HEAD);
-        head.setSkullData(new GuiItem.SkullData(target.getUniqueId()));
-        head.setDisplayName("&7" + target.getName());
-        head.addAction(new JSONObject().put("action", "command").put("command", "status"));
-        inv.addItem(head);
-
-        GuiItem boogie = new GuiItem("B");
-        boogie.setDisplayName("&cBoogie Status");
-        boogie.setLore("&7Click to toggle.", "&7Current status: " + (playerManager.isBoogie(target) ? "&ayes" : "&cno"));
-        boogie.setMaterial(Material.STICK).setCustomModelData(101);
-        boogie.addAction(new JSONObject().put("action", "command").put("command", playerManager.isBoogie(target) ? "lastlife boogie remove " + target.getName() : "lastlife boogie set " + target.getName()));
-        boogie.addAction(new JSONObject().put("action", "command").put("command", "status player " + target.getName()));
-        inv.addItem(boogie);
-
-        GuiItem heart = new GuiItem("C");
-        heart.setDisplayName("&aLives&7: " + playerManager.getLives(target)).setMaterial(Material.TOTEM_OF_UNDYING).setCustomModelData(1000);
-        inv.addItem(heart);
-
-        GuiItem up = new GuiItem("D");
-        up.setDisplayName("&aIncrease").setMaterial(Material.STICK).setCustomModelData(105);
-        up.addAction(new JSONObject().put("action", "command").put("command", "lastlife life add " + target.getName() + " 1 false"));
-        up.addAction(new JSONObject().put("action", "command").put("command", "status player " + target.getName()));
-        inv.addItem(up);
-
-        GuiItem down = new GuiItem("E");
-        down.setDisplayName("&cDecrease").setMaterial(Material.STICK).setCustomModelData(106);
-        down.addAction(new JSONObject().put("action", "command").put("command", "lastlife life add " + target.getName() + " -1"));
-        down.addAction(new JSONObject().put("action", "command").put("command", "status player " + target.getName()));
-        inv.addItem(down);
-
-        inv.addItem(new GuiItem("X").setMaterial(Material.AIR));
-        return inv;
-    }
-
-    private GuiInventory generatePlayerList(String[] args) {
-        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        int page = args.length >= 2 ? Integer.parseInt(args[1]) : 1;
-        StringBuilder config = new StringBuilder();
-        List<GuiItem> items = new ArrayList<>();
-        Pagifier pagifier = new Pagifier(playerManager.getPlayers(), 27);
-        for (int i = 0; i < pagifier.getPage(page).size(); i++) {
-
-            UUID uid = (UUID) pagifier.getPage(page).get(i);
-            OfflinePlayer target = Bukkit.getOfflinePlayer(uid);
-            GuiItem item = new GuiItem(((char) i) + "");
-            setupPlayerInfo(item, target);
-
-
-            items.add(item);
-            config.append(item.getIdentifier());
-
-
-        }
-        for (int i = pagifier.getPage(page).size(); i < 27; i++) {
-            config.append("X");
-        }
-        if (page < pagifier.getPages() && page > 1) config.append("XXXYXZXXX");
-        if (page < pagifier.getPages() && page == 1) config.append("XXXXXZXXX");
-        if (page >= pagifier.getPages() && pagifier.getPages() != 1) config.append("XXXYXXXXX");
-        if (page == pagifier.getPages() && page == 1) config.append("XXXXXXXXX");
-        GuiInventory inv = new GuiInventory(new Date().getTime() + "", "&e&lStatus", 36, config.toString());
-        for (GuiItem item : items)
-            inv.addItem(item);
-        GuiItem air = new GuiItem("X");
-        air.setMaterial(Material.AIR);
-        inv.addItem(air);
-
-        GuiItem next = new GuiItem("Z");
-        next.setMaterial(Material.STICK);
-        next.setCustomModelData(103);
-        next.setDisplayName("&aNext Page (" + (page + 1) + "/" + pagifier.getPages() + ")");
-        JSONArray nextArray = new JSONArray();
-        JSONObject nextAction1 = new JSONObject();
-        nextAction1.put("action", "command");
-        nextAction1.put("command", "status admin " + (page + 1));
-        nextArray.put(nextAction1);
-        next.setActions(nextArray);
-        inv.addItem(next);
-
-        GuiItem prev = new GuiItem("Y");
-        prev.setMaterial(Material.STICK);
-        prev.setCustomModelData(104);
-        prev.setDisplayName("&aPrevious Page (" + (page - 1) + "/" + pagifier.getPages() + ")");
-        JSONArray prevArray = new JSONArray();
-        JSONObject prevAction1 = new JSONObject();
-        prevAction1.put("action", "command");
-        prevAction1.put("command", "status admin " + (page - 1));
-        prevArray.put(prevAction1);
-        prev.setActions(prevArray);
-        inv.addItem(prev);
-
-        GuiItem search = new GuiItem("W");
-        search.setMaterial(Material.STICK);
-        search.setCustomModelData(107);
-        search.setDisplayName("&bSearch");
-
-        return inv;
-    }
-
-    private void setupPlayerInfo(GuiItem item, OfflinePlayer target) {
-        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        item.setMaterial(Material.PLAYER_HEAD);
-        item.setSkullData(new GuiItem.SkullData(target.getUniqueId()));
-
-        item.setDisplayName("&a" + target.getName());
-        int lives = playerManager.getLives(target);
-        item.setLore("&7Online: " + (target.isOnline() ? "&ayes" : "&cno"), "&7Boogie: " + (playerManager.isBoogie(target) ? "&ayes" : "&cno"), "&7Lives: " + (lives > 3 ? "&2" : lives == 3 ? "&a" : lives == 2 ? "&e" : lives == 1 ? "&c" : "&7") + lives);
-
-        JSONArray array = new JSONArray();
-        JSONObject action1 = new JSONObject();
-        action1.put("action", "command");
-        action1.put("command", "status player " + target.getName());
-        array.put(action1);
-        item.setActions(array);
-    }
 }
