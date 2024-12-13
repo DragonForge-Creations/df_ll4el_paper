@@ -125,49 +125,84 @@ public class PartyCommand extends CommandExecutor {
                             return Command.SINGLE_SUCCESS;
                         })
                         .then(argument("arg2", StringArgumentType.string())
-                                .suggests((context, builder) -> {
-                                    CommandSender sender = context.getSource().getSender();
+                                        .suggests((context, builder) -> {
+                                            CommandSender sender = context.getSource().getSender();
 
-                                    String action = context.getInput().split(" ")[1];
+                                            String action = context.getInput().split(" ")[1];
 //                                    String action = StringArgumentType.getString(context, "action");
-                                    if (action.equalsIgnoreCase("join") || action.equalsIgnoreCase("leave")) {
-                                        if (sender.hasPermission("lastlife.party." + action.toLowerCase())) {
-                                            for (String s : ((PartyManager) DataManager.getConfigManager("parties")).getParties()) {
-                                                builder.suggest(s);
+                                            if (action.equalsIgnoreCase("join") || action.equalsIgnoreCase("leave")) {
+                                                if (sender.hasPermission("lastlife.party." + action.toLowerCase())) {
+                                                    for (String s : ((PartyManager) DataManager.getConfigManager("parties")).getParties()) {
+                                                        builder.suggest(s);
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-                                    return builder.buildFuture();
-                                })
-                                .executes(context -> {
-                                    CommandSender sender = context.getSource().getSender();
-                                    if(!(sender instanceof Player player)){
-                                        return logError(sender, "cmd.error.player_only");
-                                    }
-                                    String action = StringArgumentType.getString(context, "action");
-                                    String arg2 = StringArgumentType.getString(context, "arg2");
-                                    if (action.equalsIgnoreCase("create")) {
-                                        if (arg2.equalsIgnoreCase("help")) {
-                                            sender.sendMessage(MessageUtils.colorize("&a/" + getName() + " create <party> &7- Creates a party."));
-                                            return Command.SINGLE_SUCCESS;
-                                        }
-                                        ((PartyManager) DataManager.getConfigManager("parties")).createParty(arg2);
-                                        sender.sendMessage(MessageUtils.getMessage("cmd.party.create", arg2));
-                                        return Command.SINGLE_SUCCESS;
-                                    }
-                                    if (action.equalsIgnoreCase("join")) {
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(context -> {
+                                            CommandSender sender = context.getSource().getSender();
+                                            if (!(sender instanceof Player player)) {
+                                                return logError(sender, "cmd.error.player_only");
+                                            }
+                                            String action = StringArgumentType.getString(context, "action");
+                                            String arg2 = StringArgumentType.getString(context, "arg2");
+                                            if (action.equalsIgnoreCase("create")) {
+                                                if (arg2.equalsIgnoreCase("help")) {
+                                                    sender.sendMessage(MessageUtils.colorize("&a/" + getName() + " create <party> &7- Creates a party."));
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+                                                ((PartyManager) DataManager.getConfigManager("parties")).createParty(arg2);
+                                                sender.sendMessage(MessageUtils.getMessage("cmd.party.create", arg2));
+                                                return Command.SINGLE_SUCCESS;
+                                            }
+                                            if (action.equalsIgnoreCase("join")) {
 //                                        DataManager.getConfigManager("parties", PartyManager.class).getParty(arg2).
-                                        DataManager.getConfigManager("players", PlayerManager.class).setParty(player, arg2);
-                                        return Command.SINGLE_SUCCESS;
-                                    }
-                                    if (action.equalsIgnoreCase("leave")) {
-                                        if (sender.hasPermission("lastlife.party.leave"))
-                                            ((PlayerManager) DataManager.getConfigManager("players")).setParty((Player) sender, "none");
+                                                DataManager.getConfigManager("players", PlayerManager.class).setParty(player, arg2);
+                                                return Command.SINGLE_SUCCESS;
+                                            }
+                                            if (action.equalsIgnoreCase("leave")) {
+                                                if (sender.hasPermission("lastlife.party.leave"))
+                                                    ((PlayerManager) DataManager.getConfigManager("players")).setParty((Player) sender, "none");
 
-                                        return Command.SINGLE_SUCCESS;
-                                    }
-                                    return Command.SINGLE_SUCCESS;
-                                })
+                                                return Command.SINGLE_SUCCESS;
+                                            }
+                                            return Command.SINGLE_SUCCESS;
+                                        })
+                                        .then(argument("player", StringArgumentType.string())
+                                                .suggests((context, builder) -> {
+                                                    CommandSender sender = context.getSource().getSender();
+                                                    String action = context.getInput().split(" ")[1];
+                                                    if (action.equalsIgnoreCase("join")) {
+                                                        for (Player p : sender.getServer().getOnlinePlayers()) {
+                                                            builder.suggest(p.getName());
+                                                        }
+                                                    }
+                                                    return builder.buildFuture();
+                                                })
+                                                .executes(context -> {
+                                                    CommandSender sender = context.getSource().getSender();
+                                                    String action = StringArgumentType.getString(context, "action");
+                                                    String arg2 = StringArgumentType.getString(context, "arg2");
+                                                    String player = StringArgumentType.getString(context, "player");
+                                                    if (action.equalsIgnoreCase("join")) {
+                                                        Player target = sender.getServer().getPlayer(player);
+                                                        if (target == null) {
+                                                            return logError(sender, "cmd.error.no_player");
+                                                        }
+                                                        DataManager.getConfigManager("players", PlayerManager.class).setParty(target, arg2);
+                                                        return Command.SINGLE_SUCCESS;
+                                                    }
+                                                    if (action.equalsIgnoreCase("leave")) {
+                                                        Player target = sender.getServer().getPlayer(player);
+                                                        if (target == null) {
+                                                            return logError(sender, "cmd.error.no_player");
+                                                        }
+                                                        DataManager.getConfigManager("players", PlayerManager.class).setParty(target, "none");
+                                                        return Command.SINGLE_SUCCESS;
+                                                    }
+                                                    return Command.SINGLE_SUCCESS;
+                                                })
+                                        )
                         )
                 ).build();
     }
