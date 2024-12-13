@@ -1,12 +1,19 @@
 package me.quickscythe.paper.ll4el.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
+import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
 
 
@@ -15,12 +22,97 @@ public class BoogieCommand extends CommandExecutor {
         super(plugin, "boogie");
     }
 
+    // /boogie roll [amount]
+    // boogie set [player]
+    // boogie remove [player|all]
 
     @Override
     public LiteralCommandNode<CommandSourceStack> getNode() {
-        return literal(getName()).executes(context -> {
-            DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(1, true);
+        return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.boogie.usage"))).then(argument("action", StringArgumentType.string()).executes(context -> {
+            CommandSender sender = context.getSource().getSender();
+            String action = StringArgumentType.getString(context, "action");
+            if (action.equalsIgnoreCase("roll")) {
+                if (!sender.hasPermission("lastlife.boogie.roll"))
+                    return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+                DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(1, true);
+                sender.sendMessage(MessageUtils.getMessage("cmd.boogie.roll", 1));
+                return 1;
+            }
+            return logError(sender, sender.hasPermission("lastlife.boogie") ? MessageUtils.getMessage("cmd.boogie.usage") : MessageUtils.getMessage("cmd.error.no_perm"));
+        }).suggests((context, builder) -> {
+            CommandSender sender = context.getSource().getSender();
+            String key = "lastlife.boogie";
+            if (sender.hasPermission(key)) {
+                if (sender.hasPermission(key + ".roll")) builder.suggest("roll");
+                if (sender.hasPermission(key + ".set")) builder.suggest("set");
+                if (sender.hasPermission(key + ".remove")) builder.suggest("remove");
+            }
+            return builder.buildFuture();
+        }).then(argument("player", StringArgumentType.string()).executes(context -> {
+            CommandSender sender = context.getSource().getSender();
+            String action = StringArgumentType.getString(context, "action");
+            String target = StringArgumentType.getString(context, "player");
+            if (action.equalsIgnoreCase("set")) {
+                if (!sender.hasPermission("lastlife.boogie.set"))
+                    return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+                OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(target);
+                if (!targetPlayer.hasPlayedBefore())
+                    return logError(sender, MessageUtils.getMessage("cmd.error.player_not_found"));
+                DataManager.getConfigManager("players", PlayerManager.class).setBoogie(targetPlayer);
+                sender.sendMessage(MessageUtils.getMessage("cmd.boogie.set", target));
+            }
+            if (action.equalsIgnoreCase("remove")) {
+                if (!sender.hasPermission("lastlife.boogie.remove"))
+                    return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+                if (target.equalsIgnoreCase("all")) {
+                    DataManager.getConfigManager("players", PlayerManager.class).getPlayers().forEach((uuid) -> {
+                        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(uuid);
+                        PlayerManager man = DataManager.getConfigManager("players", PlayerManager.class);
+                        if (man.isBoogie(targetPlayer)) man.removeBoogie(targetPlayer);
+                    });
+                    sender.sendMessage(MessageUtils.getMessage("cmd.boogie.remove.all"));
+                } else {
+                    OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(target);
+                    if (!targetPlayer.hasPlayedBefore())
+                        return logError(sender, MessageUtils.getMessage("cmd.error.player_not_found"));
+                    DataManager.getConfigManager("players", PlayerManager.class).removeBoogie(targetPlayer);
+                    sender.sendMessage(MessageUtils.getMessage("cmd.boogie.remove.player", target));
+                }
+            }
+            if (action.equalsIgnoreCase("roll")) {
+                if (!sender.hasPermission("lastlife.boogie.roll"))
+                    return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+                try {
+                    int amount = Integer.parseInt(target);
+                    DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(amount, true);
+                    sender.sendMessage(MessageUtils.getMessage("cmd.boogie.roll", amount));
+                } catch (NumberFormatException e) {
+                    return logError(sender, MessageUtils.getMessage("cmd.error.invalid_number", target));
+                }
+            }
             return 1;
-        }).build();
+        }).suggests((context, builder) -> {
+            CommandSender sender = context.getSource().getSender();
+            if (sender.hasPermission("lastlife.boogie")) {
+                String[] input = context.getInput().split(" ");
+                String action = input[1];
+                if (action.equalsIgnoreCase("set") || action.equalsIgnoreCase("remove")) {
+                    DataManager.getConfigManager("players", PlayerManager.class).getPlayers().forEach((uuid) -> {
+                        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(uuid);
+                        if (action.equalsIgnoreCase("set") || (action.equalsIgnoreCase("remove") && DataManager.getConfigManager("players", PlayerManager.class).isBoogie(targetPlayer)))
+                            builder.suggest(targetPlayer.getName());
+                    });
+                    builder.suggest("all");
+                }
+                if (action.equalsIgnoreCase("roll")) {
+                    builder.suggest(1);
+                    builder.suggest(2);
+                    builder.suggest(3);
+                    builder.suggest(4);
+                    builder.suggest(5);
+                }
+            }
+            return builder.buildFuture();
+        }))).build();
     }
 }

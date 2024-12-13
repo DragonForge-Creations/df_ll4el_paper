@@ -73,7 +73,7 @@ public class Utils {
         MessageUtils.addMessage("party.chat.leave", "&7Party chat: &coff&7.");
         MessageUtils.addMessage("party.chat.no_party", "&cYou aren't in a party.");
         MessageUtils.addMessage("error.party.no_party", "&c\"[0]\" doesn't seem to exist. Check your spelling and try again.");
-
+        MessageUtils.addMessage("cmd.boogie.remove.player", "&a[0] is no longer a boogie.");
     }
     private static void registerGuis() {
         registerSettingsGui();
