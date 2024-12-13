@@ -3,15 +3,13 @@ package me.quickscythe.paper.ll4el.utils;
 import json2.JSONArray;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
+import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
 import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.dragonforge.utils.gui.GuiItem;
 import me.quickscythe.dragonforge.utils.gui.GuiManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
-import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
-import me.quickscythe.paper.ll4el.utils.managers.LifeManager;
-import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
-import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
+import me.quickscythe.paper.ll4el.utils.managers.*;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
 import org.bukkit.Bukkit;
@@ -31,6 +29,7 @@ public class Utils {
         LifeManager.start();
         DataManager.registerConfigManager(new LootManager(plugin));
 
+        registerPlaceholders();
         registerGuis();
         registerMessages();
 
@@ -38,6 +37,17 @@ public class Utils {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
 
+    private static void registerPlaceholders(){
+        PlaceholderUtils.registerPlaceholder("lives_color", LifeManager::getLifeColor);
+
+        PlaceholderUtils.registerPlaceholder("setting_particles", (player)-> SettingsManager.getSettings(player).particles() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_icon", (player)-> SettingsManager.getSettings(player).icon() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player)-> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player)-> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("party", (player)-> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "" : DataManager.getConfigManager("players", PlayerManager.class).getParty(player));
+        PlaceholderUtils.registerPlaceholder("party_tag", (player)-> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "&f" : "[" + DataManager.getConfigManager("players", PlayerManager.class).getParty(player) + "]");
+
+    }
     private static void registerMessages() {
         MessageUtils.addMessage("message.boogie.chat", "&cYou are a Boogie! Kill someone fast to get rid of this effect!");
         MessageUtils.addMessage("message.boogie.countdown.4", "&c&lBoogie will be selected in...");
