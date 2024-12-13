@@ -20,7 +20,7 @@ public class LifeCommand extends CommandExecutor {
     }
 
     @Override
-    public LiteralCommandNode<CommandSourceStack> getNode() {
+    public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life")))
                 .then(argument("operator", StringArgumentType.string())
                         .executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life")))

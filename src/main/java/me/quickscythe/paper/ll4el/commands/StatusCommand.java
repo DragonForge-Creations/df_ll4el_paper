@@ -36,7 +36,7 @@ public class StatusCommand extends CommandExecutor {
     }
 
     @Override
-    public LiteralCommandNode<CommandSourceStack> getNode() {
+    public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> {
             CommandSender sender = context.getSource().getSender();
             if (!(sender instanceof Player player))

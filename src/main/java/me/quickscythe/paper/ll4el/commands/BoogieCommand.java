@@ -27,7 +27,7 @@ public class BoogieCommand extends CommandExecutor {
     // boogie remove [player|all]
 
     @Override
-    public LiteralCommandNode<CommandSourceStack> getNode() {
+    public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.boogie.usage"))).then(argument("action", StringArgumentType.string()).executes(context -> {
             CommandSender sender = context.getSource().getSender();
             String action = StringArgumentType.getString(context, "action");

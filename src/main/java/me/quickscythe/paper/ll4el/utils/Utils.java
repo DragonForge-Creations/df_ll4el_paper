@@ -7,6 +7,7 @@ import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
 import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.dragonforge.utils.gui.GuiItem;
 import me.quickscythe.dragonforge.utils.gui.GuiManager;
+import me.quickscythe.dragonforge.utils.network.WebhookUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.*;
@@ -33,7 +34,7 @@ public class Utils {
         registerGuis();
         registerMessages();
 
-
+        WebhookUtils.add("deaths", "1316979149541343303", "wPGj4xyv05Hwan6xvuJ4k11jmV3SBVGMAG30-3Hyb7jrRm1xSGYZxUrwoFuhJ6pvLIrL");
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
 

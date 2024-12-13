@@ -5,6 +5,8 @@ import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -157,6 +159,9 @@ public class PlayerManager extends ConfigManager {
         pd.put("boogie", true);
         pd.put("last_selected", new Date().getTime());
         setPlayerData(player, pd);
+        if(player.isOnline()){
+            player.getPlayer().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, SoundCategory.PLAYERS, 10F, 1F);
+        }
         if (SettingsManager.getSettings(player).chat() && player.isOnline())
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.chat"));
 
