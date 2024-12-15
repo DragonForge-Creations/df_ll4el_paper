@@ -12,6 +12,7 @@ import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.*;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

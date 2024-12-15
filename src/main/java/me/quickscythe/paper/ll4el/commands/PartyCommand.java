@@ -7,7 +7,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
-import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

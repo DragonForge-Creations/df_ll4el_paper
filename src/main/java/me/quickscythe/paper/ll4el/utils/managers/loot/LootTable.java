@@ -14,12 +14,12 @@ public class LootTable {
     String amount = "5-10";
 
     public LootTable(JSONObject data) {
-        type = LootType.valueOf(data.getString("type"));
+        type = LootType.DEFAULT;
         items = new ArrayList<>();
         amount = data.has("amount") ? data.getString("amount") : amount;
-        for (int i = 0; i != data.getJSONArray("items").length(); i++) {
-            items.add(new LootItem(data.getJSONArray("items").getJSONObject(i)));
-        }
+//        for (int i = 0; i != data.getJSONArray("items").length(); i++) {
+//            items.add(new LootItem(data.getJSONArray("items").getJSONObject(i)));
+//        }
     }
 
     public List<LootItem> getItems() {

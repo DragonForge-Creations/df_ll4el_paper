@@ -13,7 +13,7 @@ import me.quickscythe.dragonforge.utils.gui.GuiItem;
 import me.quickscythe.dragonforge.utils.gui.GuiManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
-import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

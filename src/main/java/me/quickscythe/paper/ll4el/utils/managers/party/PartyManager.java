@@ -1,13 +1,12 @@
-package me.quickscythe.paper.ll4el.utils.managers;
+package me.quickscythe.paper.ll4el.utils.managers.party;
 
 import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.chat.ChatManager;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
-import me.quickscythe.dragonforge.utils.config.ConfigFile;
-import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -25,16 +24,16 @@ public class PartyManager extends ConfigManager {
         super(plugin, "parties");
     }
 
-    public JSONObject createParty(String name) {
-        JSONObject party = new JSONObject();
-        config().getData().put(name, party);
+    public Party createParty(String name) {
+        JSONObject data = new JSONObject();
+        config().getData().put(name, data);
         config().save();
-        return party;
+        return new Party(data);
     }
 
-    public JSONObject getParty(String name) {
+    public Party getParty(String name) {
         try {
-            return config().getData().getJSONObject(name);
+            return new Party(config().getData().getJSONObject(name));
         } catch (NullPointerException ex) {
             throw new NullPointerException("Couldn't find party: " + name);
         }

@@ -2,7 +2,6 @@ package me.quickscythe.paper.ll4el.listeners;
 
 import me.quickscythe.dragonforge.exceptions.QuickException;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
-import me.quickscythe.dragonforge.utils.network.NetworkUtils;
 import me.quickscythe.dragonforge.utils.network.WebhookUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
@@ -10,17 +9,12 @@ import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.Random;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -37,12 +31,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if(e.getAction().isRightClick()){
+        if(e.getAction().isLeftClick()){
             LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
             if(lootManager.isEditing(e.getPlayer())){
                 lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage(MessageUtils.getMessage("loot.create", lootManager.getEditingLocation(e.getPlayer())));
                 lootManager.finishEditing(e.getPlayer());
+                e.setCancelled(true);
             }
         }
     }

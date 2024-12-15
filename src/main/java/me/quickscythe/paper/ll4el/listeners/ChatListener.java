@@ -5,7 +5,7 @@ import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
-import me.quickscythe.paper.ll4el.utils.managers.PartyManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
