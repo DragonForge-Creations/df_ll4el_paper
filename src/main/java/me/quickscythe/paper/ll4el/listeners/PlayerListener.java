@@ -41,7 +41,7 @@ public class PlayerListener implements Listener {
             LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
             if(lootManager.isEditing(e.getPlayer())){
                 lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), e.getClickedBlock().getLocation());
-                e.getPlayer().sendMessage(MessageUtils.getMessage("cmd.loot.create", lootManager.getEditingLocation(e.getPlayer())));
+                e.getPlayer().sendMessage(MessageUtils.getMessage("loot.create", lootManager.getEditingLocation(e.getPlayer())));
                 lootManager.finishEditing(e.getPlayer());
             }
         }

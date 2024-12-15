@@ -75,6 +75,10 @@ public class Utils {
         MessageUtils.addMessage("party.chat.no_party", "&cYou aren't in a party.");
         MessageUtils.addMessage("error.party.no_party", "&c\"[0]\" doesn't seem to exist. Check your spelling and try again.");
         MessageUtils.addMessage("cmd.boogie.remove.player", "&a[0] is no longer a boogie.");
+        MessageUtils.addMessage("cmd.loot.create", "&7Punch a block to set loot drop location.");
+        MessageUtils.addMessage("cmd.boogie.remove.all", "&aAll boogies have been removed.");
+        MessageUtils.addMessage("loot.create", "&aSuccessfully created loot drop for [0].");
+
     }
     private static void registerGuis() {
         registerSettingsGui();

@@ -1,5 +1,5 @@
 name: DragonForgeLastLife
-version: '0.0.1'
+version: "${version}"
 main: me.quickscythe.paper.ll4el.Initializer
 api-version: '1.21'
 dependencies:
