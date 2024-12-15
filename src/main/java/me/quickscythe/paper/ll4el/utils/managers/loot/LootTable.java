@@ -9,12 +9,12 @@ import java.util.Random;
 
 public class LootTable {
 
-    LootManager.DropType type;
+    LootType type;
     List<LootItem> items;
     String amount = "5-10";
 
     public LootTable(JSONObject data) {
-        type = LootManager.DropType.valueOf(data.getString("type"));
+        type = LootType.valueOf(data.getString("type"));
         items = new ArrayList<>();
         amount = data.has("amount") ? data.getString("amount") : amount;
         for (int i = 0; i != data.getJSONArray("items").length(); i++) {

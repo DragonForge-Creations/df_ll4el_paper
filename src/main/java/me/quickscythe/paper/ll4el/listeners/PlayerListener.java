@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Random;
@@ -35,13 +36,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent e) {
-        if (e.getBlock().getType().equals(Material.STONE)) {
-            Location loc = e.getBlock().getLocation();
-            LootManager man = DataManager.getConfigManager("loot", LootManager.class);
-            man.createDrop("test", loc);
-            man.dropLoot("test", new Random().nextBoolean() ? LootManager.DropType.OTHER : LootManager.DropType.SHULKER);
-            man.config().save();
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        if(e.getAction().isRightClick()){
+            LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
+            if(lootManager.isEditing(e.getPlayer())){
+                lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(MessageUtils.getMessage("cmd.loot.create", lootManager.getEditingLocation(e.getPlayer())));
+                lootManager.finishEditing(e.getPlayer());
+            }
         }
     }
 

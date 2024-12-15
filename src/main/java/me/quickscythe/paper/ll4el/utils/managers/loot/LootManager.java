@@ -8,15 +8,17 @@ import me.quickscythe.paper.ll4el.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class LootManager extends ConfigManager {
     static Map<String, LootTable> tables_map = new HashMap<>();
+
+    Map<UUID, String> editing = new HashMap<>();
 
     public LootManager(JavaPlugin plugin) {
         super(plugin, "loot");
@@ -39,10 +41,10 @@ public class LootManager extends ConfigManager {
         config().getData().put(name, CoreUtils.encryptLocation(location));
     }
 
-    public void dropLoot(String name, DropType type) {
+    public void dropLoot(String name, LootType type) {
         Location drop = CoreUtils.decryptLocation(config().getData().getString(name));
         switch (type) {
-            case OTHER -> drop.getBlock().setType(new Random().nextBoolean() ? Material.CHEST : Material.BARREL);
+            case DEFAULT -> drop.getBlock().setType(new Random().nextBoolean() ? Material.CHEST : Material.BARREL);
             case SHULKER -> drop.getBlock().setType(Material.SHULKER_BOX);
         }
         Container block = (Container) drop.getBlock().getState();
@@ -51,7 +53,7 @@ public class LootManager extends ConfigManager {
 
     }
 
-    public void dropLoot(DropType type) {
+    public void dropLoot(LootType type) {
         dropLoot(config().getData().keySet().stream().skip(new Random().nextInt(config().getData().length())).findFirst().get(), type);
 
     }
@@ -62,12 +64,26 @@ public class LootManager extends ConfigManager {
         }
     }
 
-    public enum DropType {
+    public void startEditing(Player player, String location) {
+        editing.put(player.getUniqueId(), location);
+    }
 
-        SHULKER, OTHER;
+    public void finishEditing(Player player) {
+        editing.remove(player.getUniqueId());
+    }
 
-        DropType() {
+    public boolean isEditing(Player player) {
+        return editing.containsKey(player.getUniqueId());
+    }
 
-        }
+    public String getEditingLocation(Player player) {
+        return editing.getOrDefault(player.getUniqueId(), null);
+    }
+
+    public Location[] getLocations() {
+        List<Location> locations = new ArrayList<>();
+        config().getData().keySet().forEach(s -> locations.add(CoreUtils.decryptLocation(config().getData().getString(s))));
+//        locations.add(CoreUtils.decryptLocation(s)));
+        return locations.toArray(new Location[0]);
     }
 }
