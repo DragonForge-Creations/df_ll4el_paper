@@ -10,14 +10,17 @@ import me.quickscythe.dragonforge.utils.gui.GuiManager;
 import me.quickscythe.dragonforge.utils.network.WebhookUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
-import me.quickscythe.paper.ll4el.utils.managers.*;
+import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
+import me.quickscythe.paper.ll4el.utils.managers.LifeManager;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
+import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.Party;
 import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
-import java.util.Date;
 
 public class Utils {
 
@@ -39,17 +42,24 @@ public class Utils {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
 
-    private static void registerPlaceholders(){
+    private static void registerPlaceholders() {
         PlaceholderUtils.registerPlaceholder("lives_color", LifeManager::getLifeColor);
 
-        PlaceholderUtils.registerPlaceholder("setting_particles", (player)-> SettingsManager.getSettings(player).particles() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_icon", (player)-> SettingsManager.getSettings(player).icon() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_chat", (player)-> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_chat", (player)-> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("party", (player)-> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "" : DataManager.getConfigManager("players", PlayerManager.class).getParty(player));
-        PlaceholderUtils.registerPlaceholder("party_tag", (player)-> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "&f" : "[" + DataManager.getConfigManager("players", PlayerManager.class).getParty(player) + "]");
+        PlaceholderUtils.registerPlaceholder("setting_particles", (player) -> SettingsManager.getSettings(player).particles() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_icon", (player) -> SettingsManager.getSettings(player).icon() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("party", (player) -> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "" : DataManager.getConfigManager("players", PlayerManager.class).getParty(player));
+        PlaceholderUtils.registerPlaceholder("party_tag", (player) -> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "&f" : "[" + DataManager.getConfigManager("players", PlayerManager.class).getParty(player) + "]");
+        PlaceholderUtils.registerPlaceholder("party_color", (player) -> {
+            PlayerManager playerManager = DataManager.getConfigManager("players", PlayerManager.class);
+            PartyManager partyManager = DataManager.getConfigManager("parties", PartyManager.class);
+            Party party = partyManager.getParty(playerManager.getParty(player));
+            return playerManager.getParty(player).equalsIgnoreCase("none") ? "&f" : "" + ChatColor.of(party.getColor());
+        });
 
     }
+
     private static void registerMessages() {
         MessageUtils.addMessage("message.boogie.chat", "&cYou are a Boogie! Kill someone fast to get rid of this effect!");
         MessageUtils.addMessage("message.boogie.countdown.4", "&c&lBoogie will be selected in...");
@@ -61,7 +71,7 @@ public class Utils {
         MessageUtils.addMessage("message.boogie.countdown.not", "&a&lNOT a Boogie!");
         MessageUtils.addMessage("message.boogie.cured", "&aYou've been cured!");
         MessageUtils.addMessage("action.elimination", "[0] has been eliminated[1]!");
-        MessageUtils.addMessage("cmd.error.player_only","&cSorry, that is a player only command.");
+        MessageUtils.addMessage("cmd.error.player_only", "&cSorry, that is a player only command.");
         MessageUtils.addMessage("message.lives.more", "&aYou've gained [0] lives.");
         MessageUtils.addMessage("cmd.loot.create.success", "&aSuccessfully created [0] loot drop at [1].");
         MessageUtils.addMessage("cmd.life.edit.success", "&aSuccessfully edited the lives of [0].");
@@ -81,6 +91,7 @@ public class Utils {
         MessageUtils.addMessage("loot.create", "&aSuccessfully created loot drop for [0].");
 
     }
+
     private static void registerGuis() {
         registerSettingsGui();
         registerStatusGui();

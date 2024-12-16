@@ -14,4 +14,8 @@ public class Party {
     public void setColor(Color yellow) {
         data.put("color", yellow.getRGB());
     }
+
+    public Color getColor() {
+        return new Color(data.has("color") ? data.getInt("color") : 16777215);
+    }
 }

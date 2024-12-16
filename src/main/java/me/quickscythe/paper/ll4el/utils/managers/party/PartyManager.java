@@ -33,7 +33,7 @@ public class PartyManager extends ConfigManager {
 
     public Party getParty(String name) {
         try {
-            return new Party(config().getData().getJSONObject(name));
+            return new Party(!name.equalsIgnoreCase("none") ? config().getData().getJSONObject(name) : new JSONObject());
         } catch (NullPointerException ex) {
             throw new NullPointerException("Couldn't find party: " + name);
         }
@@ -79,9 +79,8 @@ public class PartyManager extends ConfigManager {
     public List<UUID> getPlayers(String party) {
         List<UUID> uids = new ArrayList<>();
         PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        for(UUID uid : playerManager.getPlayers())
-            if(playerManager.getParty(Bukkit.getOfflinePlayer(uid)).equalsIgnoreCase(party))
-                uids.add(uid);
+        for (UUID uid : playerManager.getPlayers())
+            if (playerManager.getParty(Bukkit.getOfflinePlayer(uid)).equalsIgnoreCase(party)) uids.add(uid);
         return uids;
     }
 }

@@ -1,17 +1,21 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot;
 
+import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.config.ConfigFile;
 import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import me.quickscythe.paper.ll4el.utils.Utils;
+import me.quickscythe.paper.ll4el.utils.managers.loot.tables.CommonLootTable;
+import me.quickscythe.paper.ll4el.utils.managers.loot.tables.ShulkerLootTable;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -27,9 +31,15 @@ public class LootManager extends ConfigManager {
     public void start() {
         super.start();
         ConfigFile tables = ConfigFileManager.getFile(Utils.plugin(), "loot_tables");
-
+        if (tables.getData().has("shulkers")) {
+            JSONObject shulkers = tables.getData().getJSONObject("shulkers");
+            for (String s : shulkers.keySet()) {
+                tables_map.put(s, new ShulkerLootTable(s, shulkers.getJSONObject(s)));
+            }
+        }
         for (String s : tables.getData().keySet()) {
-            tables_map.put(s, new LootTable(tables.getData().getJSONObject(s)));
+            if (s.equalsIgnoreCase("shulkers")) continue;
+            tables_map.put(s, new CommonLootTable(s, tables.getData().getJSONObject(s)));
         }
     }
 
@@ -37,31 +47,43 @@ public class LootManager extends ConfigManager {
         return tables_map.get(name);
     }
 
-    public  void createDrop(String name, Location location) {
+    public void createDrop(String name, Location location) {
         config().getData().put(name, CoreUtils.encryptLocation(location));
     }
 
     public void dropLoot(String name, LootType type) {
         Location drop = CoreUtils.decryptLocation(config().getData().getString(name));
-        switch (type) {
-            case DEFAULT -> drop.getBlock().setType(new Random().nextBoolean() ? Material.CHEST : Material.BARREL);
-            case SHULKER -> drop.getBlock().setType(Material.SHULKER_BOX);
+        if (type.equals(LootType.SHULKER)) {
+            drop.getBlock().setType(Material.valueOf(DyeColor.values()[new Random().nextInt(DyeColor.values().length)].name() + "_SHULKER_BOX"));
+            ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
+
+            Inventory inv = box.getInventory();
+            String table_name = tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get();
+            while (table_name.equalsIgnoreCase("common"))
+                table_name = tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get();
+            LootTable table = tables_map.get(table_name);
+            table.loadInventory(inv);
+            CoreUtils.logger().log("[Loot] Dropped " + table_name + " loot at " + drop);
+            return;
         }
-        Container block = (Container) drop.getBlock().getState();
-        Inventory inv = block.getInventory();
-        generateLoot(inv, tables_map.get(tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get()));
+        if (type.equals(LootType.DEFAULT)) {
+            int r = 10;
 
-    }
+            for (int x = 0; x < r; x++) {
+                for (int z = 0; z < r; z++) {
+                    for (int y = 0; y < r; y++) {
+                        Location loc = drop.clone().add(x - r / 2D, y - r / 2D, z - r / 2D);
+                        if (loc.getBlock().getState() instanceof Container container) {
+                            if(container instanceof ShulkerBox) continue;
+                            tables_map.get("common").loadInventory(container.getInventory());
+                            CoreUtils.logger().log("[Loot] Dropped common loot at " + loc);
+                        }
+                    }
+                }
+            }
 
-    public void dropLoot(LootType type) {
-        dropLoot(config().getData().keySet().stream().skip(new Random().nextInt(config().getData().length())).findFirst().get(), type);
-
-    }
-
-    private void generateLoot(Inventory inv, LootTable table) {
-        for (LootItem loot : table.generateItems()) {
-            inv.setItem(new Random().nextInt(inv.getSize()), loot.generateItem());
         }
+
     }
 
     public void startEditing(Player player, String location) {

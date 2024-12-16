@@ -2,52 +2,69 @@ package me.quickscythe.paper.ll4el.utils.managers.loot;
 
 
 import json2.JSONObject;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.Collections;
 
-public class LootTable {
+import static net.kyori.adventure.text.Component.text;
 
-    LootType type;
-    List<LootItem> items;
-    String amount = "5-10";
+public abstract class LootTable {
 
-    public LootTable(JSONObject data) {
-        type = LootType.DEFAULT;
-        items = new ArrayList<>();
-        amount = data.has("amount") ? data.getString("amount") : amount;
-//        for (int i = 0; i != data.getJSONArray("items").length(); i++) {
-//            items.add(new LootItem(data.getJSONArray("items").getJSONObject(i)));
-//        }
+    private final LootTableType type;
+    private final String name;
+    private final JSONObject data;
+
+    public LootTable(String name, JSONObject data, LootTableType type) {
+        this.type = type;
+        this.name = name;
+        this.data = data;
     }
 
-    public List<LootItem> getItems() {
-        return items;
+    public String name() {
+        return name;
     }
 
-    public List<LootItem> generateItems() {
-        List<LootItem> loot = new ArrayList<>();
-        int min = 0;
-        int max = 0;
-        if (amount.contains("-")) {
-            min = Integer.parseInt(amount.split("-")[0]);
-            max = Integer.parseInt(amount.split("-")[1]);
-        } else {
-            min = Integer.parseInt(amount);
-            max = min;
+    public LootTableType type() {
+        return type;
+    }
+
+    public JSONObject data() {
+        return data;
+    }
+
+    public abstract void loadInventory(Inventory inv);
+
+    public ItemStack generateItemFromData(JSONObject itemData) {
+        System.out.println("Getting item from data: \n" + itemData.toString(2));
+        ItemStack itemStack = new ItemStack(Material.valueOf(itemData.getString("item").toUpperCase()));
+        itemStack.setAmount(itemData.has("amount") ? itemData.getInt("amount") : 1);
+        if (itemData.has("components")) {
+            ItemMeta meta = itemStack.getItemMeta();
+            for (String component : itemData.getJSONObject("components").keySet()) {
+                Object value = itemData.getJSONObject("components").get(component);
+                switch (component.toLowerCase()) {
+                    case "name":
+                        meta.displayName(text((String) value));
+                        break;
+                    case "lore":
+                        meta.lore(Collections.singletonList(text((String) value)));
+                        break;
+                    case "custom_model_data":
+                        meta.setCustomModelData((int) value);
+                        break;
+                }
+            }
+            itemStack.setItemMeta(meta);
         }
-        int goal = new Random().nextInt(max - min) + min;
-        for (int i = 0; i != goal; i++) {
-            loot.add(checkRarity());
-        }
-        return loot;
+        return itemStack;
     }
 
-    private LootItem checkRarity() {
-        LootItem item = getItems().get(new Random().nextInt(getItems().size()));
-        if (new Random().nextDouble() <= (item.getData().has("rarity") ? item.getData().getDouble("rarity") : 1D))
-            return item;
-        else return checkRarity();
+    public enum LootTableType {
+        SHULKER_BOX, COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, BOSS
     }
+
+
 }
