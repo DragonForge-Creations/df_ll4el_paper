@@ -36,7 +36,10 @@ public class LinkCommand extends CommandExecutor {
             DonorDriveApi.linkParticipant(player, participantId);
             player.sendMessage(MessageUtils.getMessage("cmd.link.success", player.getName(), participant.getString("displayName")));
             return 1;
-        }).then(argument("playerName", StringArgumentType.string()).executes(context->{
+        }).then(argument("playerName", StringArgumentType.string()).executes(context -> {
+            if (!(context.getSource().getSender().hasPermission("ll4el.link.others"))) {
+                return logError(context, MessageUtils.getMessage("cmd.error.no_perm"));
+            }
             int participantId = IntegerArgumentType.getInteger(context, "participantId");
             String playerName = StringArgumentType.getString(context, "playerName");
 
@@ -45,7 +48,7 @@ public class LinkCommand extends CommandExecutor {
                 return logError(context, "Invalid participant ID");
             }
 
-            if(!Bukkit.getOfflinePlayer(playerName).hasPlayedBefore()){
+            if (!Bukkit.getOfflinePlayer(playerName).hasPlayedBefore()) {
                 return logError(context, "Invalid player name");
             }
 
@@ -53,6 +56,13 @@ public class LinkCommand extends CommandExecutor {
             DonorDriveApi.linkParticipant(target, participantId);
             context.getSource().getSender().sendMessage(MessageUtils.getMessage("cmd.link.success", target.getName(), participant.getString("displayName")));
             return 1;
+        }).suggests((context, builder) -> {
+            if (context.getSource().getSender().hasPermission("ll4el.link.others")) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    builder.suggest(player.getName());
+                }
+            }
+            return builder.buildFuture();
         }))).build();
     }
 }
