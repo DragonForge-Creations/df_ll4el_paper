@@ -19,7 +19,6 @@ public class CommonLootTable extends LootTable {
             for(int i = 0; i < data.getJSONArray("items").length(); i++){
                 JSONObject itemData = data.getJSONArray("items").getJSONObject(i);
                 contents.add(generateItemFromData(itemData));
-                System.out.println(itemData.getString("item"));
             }
         }
     }

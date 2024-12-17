@@ -34,7 +34,6 @@ public class ShulkerLootTable extends LootTable {
             char c = key.charAt(0);
             JSONObject itemData = items.getJSONObject(key);
             ItemStack itemStack = generateItemFromData(itemData);
-            System.out.println("Item: " + itemStack.getType().name());
             itemMap.put(c,itemStack);
 
         }

@@ -33,6 +33,7 @@ public class Utils {
         DataManager.registerConfigManager(new PlayerManager(plugin));
         LifeManager.start();
         DataManager.registerConfigManager(new LootManager(plugin));
+        DonorDriveApi.start();
 
         registerPlaceholders();
         registerGuis();
@@ -89,6 +90,7 @@ public class Utils {
         MessageUtils.addMessage("cmd.loot.create", "&7Punch a block to set loot drop location.");
         MessageUtils.addMessage("cmd.boogie.remove.all", "&aAll boogies have been removed.");
         MessageUtils.addMessage("loot.create", "&aSuccessfully created loot drop for [0].");
+        MessageUtils.addMessage("cmd.link.success", "&aSuccessfully linked [0] to [1].");
 
     }
 

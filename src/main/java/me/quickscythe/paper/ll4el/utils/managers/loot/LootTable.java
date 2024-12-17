@@ -38,7 +38,6 @@ public abstract class LootTable {
     public abstract void loadInventory(Inventory inv);
 
     public ItemStack generateItemFromData(JSONObject itemData) {
-        System.out.println("Getting item from data: \n" + itemData.toString(2));
         ItemStack itemStack = new ItemStack(Material.valueOf(itemData.getString("item").toUpperCase()));
         itemStack.setAmount(itemData.has("amount") ? itemData.getInt("amount") : 1);
         if (itemData.has("components")) {

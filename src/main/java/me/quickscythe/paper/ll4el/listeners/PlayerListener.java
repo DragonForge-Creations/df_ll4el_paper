@@ -60,6 +60,8 @@ public class PlayerListener implements Listener {
             msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
             e.getEntity().getServer().broadcast(text(msg));
             elimination = true;
+            playerManager.removeBoogie(player);
+            playerManager.setParty(player, "none");
         }
         playerManager.removeLife(player);
         WebhookUtils.send("deaths",

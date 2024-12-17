@@ -2,6 +2,7 @@ package me.quickscythe.paper.ll4el.utils.timers;
 
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
+import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
@@ -12,10 +13,13 @@ import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.TimeUnit;
+
 public class MainTimer implements Runnable {
 
     protected Particle.DustOptions dustoptions = new Particle.DustOptions(Color.RED, 1);
     private final PlayerManager playerManager;
+    private long lastApiUpdate = 0;
 
     public MainTimer() {
         this.playerManager = (PlayerManager) DataManager.getConfigManager("players");
@@ -24,6 +28,14 @@ public class MainTimer implements Runnable {
 
     @Override
     public void run() {
+
+        long now = System.currentTimeMillis();
+        if(now - lastApiUpdate >= TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES)) {
+            lastApiUpdate = now;
+            DonorDriveApi.processDonations();
+            // Update the DonorDrive API
+            // DonorDriveApi.updateParticipants();
+        }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (playerManager.isBoogie(player)) {

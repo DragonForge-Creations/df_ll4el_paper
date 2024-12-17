@@ -108,4 +108,8 @@ public class LootManager extends ConfigManager {
 //        locations.add(CoreUtils.decryptLocation(s)));
         return locations.toArray(new Location[0]);
     }
+
+    public void randomDrop() {
+        //todo
+    }
 }
