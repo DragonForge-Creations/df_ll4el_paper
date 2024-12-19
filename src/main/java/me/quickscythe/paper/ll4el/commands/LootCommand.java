@@ -9,6 +9,7 @@ import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
+import me.quickscythe.paper.ll4el.utils.managers.loot.LootTable;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootType;
 import net.minecraft.network.chat.Component;
 import org.bukkit.command.CommandSender;
@@ -53,8 +54,8 @@ public class LootCommand extends CommandExecutor {
                 if (sender.hasPermission("lastlife.admin.loot.drop")) {
                     LootType type = LootType.DEFAULT;
                     LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
-                    lm.dropLoot(location, type);
-                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", type, location), sender);
+                    LootTable table = lm.dropLoot(location, type);
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", table.name(), location), sender);
                 }
 
             }

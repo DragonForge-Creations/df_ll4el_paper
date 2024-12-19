@@ -8,7 +8,6 @@ import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.managers.loot.tables.CommonLootTable;
 import me.quickscythe.paper.ll4el.utils.managers.loot.tables.ShulkerLootTable;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
@@ -53,43 +52,38 @@ public class LootManager extends ConfigManager {
         config().getData().put(name, CoreUtils.encryptLocation(location));
     }
 
-    public void dropLoot(String locationName, LootType type) {
+    public LootTable dropLoot(String locationName, LootType type) {
         Location drop = CoreUtils.decryptLocation(config().getData().getString(locationName));
-        if(!drop.isChunkLoaded()){
+        if (!drop.isChunkLoaded()) {
             drop.getChunk().load();
         }
         if (type.equals(LootType.SHULKER)) {
             String table_name = getRandomTableName();
-            while (table_name.equalsIgnoreCase("common"))
-                table_name = getRandomTableName();
+            while (table_name.equalsIgnoreCase("common")) table_name = getRandomTableName();
             ShulkerLootTable table = (ShulkerLootTable) tables_map.get(table_name);
             drop.getBlock().setType(Material.valueOf(table.getColor().name() + "_SHULKER_BOX"));
             ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
             Inventory inv = box.getInventory();
             table.loadInventory(inv);
             CoreUtils.logger().log("LootManager", "Dropped " + table_name + " loot at " + locationName);
-            return;
+            return table;
         }
-        if (type.equals(LootType.DEFAULT)) {
-            int r = 25;
+        int r = 25;
 
-            for (int x = 0; x < r; x++) {
-                for (int z = 0; z < r; z++) {
-                    for (int y = 0; y < r; y++) {
-                        Location loc = drop.clone().add(x - r / 2D, y - r / 2D, z - r / 2D);
-                        if (loc.getBlock().getState() instanceof Container container) {
-                            if(container instanceof ShulkerBox) continue;
-                            tables_map.get("common").loadInventory(container.getInventory());
-                            CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
+        for (int x = 0; x < r; x++) {
+            for (int z = 0; z < r; z++) {
+                for (int y = 0; y < r; y++) {
+                    Location loc = drop.clone().add(x - r / 2D, y - r / 2D, z - r / 2D);
+                    if (loc.getBlock().getState() instanceof Container container) {
+                        if (container instanceof ShulkerBox) continue;
+                        tables_map.get("common").loadInventory(container.getInventory());
+                        CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
 //                            return;
-                        }
                     }
                 }
             }
-
-
         }
-
+        return tables_map.get("common");
     }
 
     public void startEditing(Player player, String location) {
@@ -119,10 +113,10 @@ public class LootManager extends ConfigManager {
     public void randomDrop(LootType type) {
         String locationName = getRandomLocationName();
         int i = 0;
-        while(locationName.equals(last_drop)){
+        while (locationName.equals(last_drop)) {
             locationName = getRandomLocationName();
             i = i + 1;
-            if(i > 5) break;
+            if (i > 5) break;
         }
         last_drop = locationName;
         dropLoot(locationName, type);
