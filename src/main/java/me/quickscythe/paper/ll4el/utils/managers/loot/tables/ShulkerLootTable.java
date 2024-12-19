@@ -3,6 +3,7 @@ package me.quickscythe.paper.ll4el.utils.managers.loot.tables;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootTable;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,10 +16,14 @@ import java.util.Map;
 public class ShulkerLootTable extends LootTable {
 
     Map<Integer, ItemStack> contents = new HashMap<>();
+    DyeColor color = DyeColor.WHITE;
 
     public ShulkerLootTable(String name, JSONObject data) {
         super(name, data, LootTableType.SHULKER_BOX);
 
+        if(data.has("dye_color")){
+            color = DyeColor.valueOf(data.getString("dye_color").toUpperCase());
+        }
 
         // Create a new inventory with the name of the loot table
         JSONObject contents = data.getJSONObject("contents");
@@ -49,6 +54,10 @@ public class ShulkerLootTable extends LootTable {
         }
     }
 
+
+    public DyeColor getColor() {
+        return color;
+    }
 
 
     public void loadInventory(Inventory inv) {

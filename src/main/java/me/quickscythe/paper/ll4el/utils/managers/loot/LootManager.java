@@ -59,20 +59,19 @@ public class LootManager extends ConfigManager {
             drop.getChunk().load();
         }
         if (type.equals(LootType.SHULKER)) {
-            drop.getBlock().setType(Material.valueOf(DyeColor.values()[new Random().nextInt(DyeColor.values().length)].name() + "_SHULKER_BOX"));
-            ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
-
-            Inventory inv = box.getInventory();
             String table_name = getRandomTableName();
             while (table_name.equalsIgnoreCase("common"))
                 table_name = getRandomTableName();
-            LootTable table = tables_map.get(table_name);
+            ShulkerLootTable table = (ShulkerLootTable) tables_map.get(table_name);
+            drop.getBlock().setType(Material.valueOf(table.getColor().name() + "_SHULKER_BOX"));
+            ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
+            Inventory inv = box.getInventory();
             table.loadInventory(inv);
             CoreUtils.logger().log("LootManager", "Dropped " + table_name + " loot at " + locationName);
             return;
         }
         if (type.equals(LootType.DEFAULT)) {
-            int r = 10;
+            int r = 25;
 
             for (int x = 0; x < r; x++) {
                 for (int z = 0; z < r; z++) {
@@ -82,7 +81,7 @@ public class LootManager extends ConfigManager {
                             if(container instanceof ShulkerBox) continue;
                             tables_map.get("common").loadInventory(container.getInventory());
                             CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
-                            return;
+//                            return;
                         }
                     }
                 }
@@ -106,6 +105,7 @@ public class LootManager extends ConfigManager {
     }
 
     public String getEditingLocation(Player player) {
+
         return editing.getOrDefault(player.getUniqueId(), null);
     }
 

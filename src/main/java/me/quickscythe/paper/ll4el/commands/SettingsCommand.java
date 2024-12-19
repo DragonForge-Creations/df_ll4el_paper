@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
-import me.quickscythe.dragonforge.utils.gui.GuiManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,14 +21,7 @@ public class SettingsCommand extends CommandExecutor {
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName())
-                .executes(context -> {
-                    CommandSender sender = context.getSource().getSender();
-                    if(!(sender instanceof Player player)){
-                        return logError(sender, "You must be a player to use this command.");
-                    }
-                    GuiManager.openGui(player, GuiManager.getGui("settings"));
-                    return Command.SINGLE_SUCCESS;
-                }).then(argument("setting", StringArgumentType.string())
+                .executes(context -> showUsage(context, "")).then(argument("setting", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("icon");
                             builder.suggest("particles");

@@ -10,6 +10,7 @@ import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootType;
+import net.minecraft.network.chat.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -53,7 +54,7 @@ public class LootCommand extends CommandExecutor {
                     LootType type = LootType.DEFAULT;
                     LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
                     lm.dropLoot(location, type);
-                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", location), sender);
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", type, location), sender);
                 }
 
             }
@@ -66,6 +67,8 @@ public class LootCommand extends CommandExecutor {
                     lm.startEditing(player, location);
                     CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.create", location), player);
                 }
+
+
             }
             return 1;
         }).suggests((context, builder) -> {

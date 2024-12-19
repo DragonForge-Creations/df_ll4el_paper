@@ -26,12 +26,13 @@ public class CommonLootTable extends LootTable {
     @Override
     public void loadInventory(Inventory inv) {
         //Randomly shuffle the contents into inv
-        List<ItemStack> shuffled = new ArrayList<>(contents);
-        for(int i = 0; i < inv.getSize(); i++){
-            if(shuffled.isEmpty()) break;
-            int index = (int) (Math.random() * shuffled.size());
-            inv.setItem(i, shuffled.get(index));
-            shuffled.remove(index);
+        inv.clear();
+        for(ItemStack master: contents){
+            ItemStack item = master.clone();
+            item.setAmount((int) (Math.random() * master.getAmount()) + 1);
+            int slot = (int) (Math.random() * inv.getSize());
+            inv.setItem(slot, item);
+
         }
 
     }
