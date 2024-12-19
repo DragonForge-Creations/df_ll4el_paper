@@ -1,21 +1,11 @@
 package me.quickscythe.paper.ll4el;
 
-import json2.JSONObject;
 import me.quickscythe.dragonforge.commands.CommandManager;
 import me.quickscythe.paper.ll4el.commands.*;
 import me.quickscythe.paper.ll4el.listeners.ChatListener;
 import me.quickscythe.paper.ll4el.listeners.PlayerListener;
 import me.quickscythe.paper.ll4el.utils.Utils;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.network.chat.Component;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public final class Initializer extends JavaPlugin {
 

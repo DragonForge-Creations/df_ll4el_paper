@@ -85,9 +85,6 @@ public abstract class LootTable {
                         JSONObject potionData = ((JSONObject) value).getJSONObject("potion");
                         if (itemStack.getType().equals(Material.TIPPED_ARROW)) {
                             PotionMeta potionMeta = (PotionMeta) meta;
-//                            Registry.POTION.forEach(potionType -> {
-//                                System.out.println(potionType.getKey().asString());
-//                            });
                             PotionType potionType = Registry.POTION.get(NamespacedKey.minecraft(potionData.getString("type")));
                             potionMeta.setBasePotionType(potionType);
                         }

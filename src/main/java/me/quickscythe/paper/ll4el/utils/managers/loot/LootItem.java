@@ -1,10 +1,10 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot;
 
+import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import json2.JSONObject;
 
 import java.util.Random;
 
@@ -35,7 +35,7 @@ public class LootItem {
         int goal = (min == max ? min : new Random().nextInt(max-min)+min);
         item.setAmount(goal);
         if(data.has("name"))
-            meta.setDisplayName(MessageUtils.colorize(data.getString("name")));
+            meta.displayName(MessageUtils.deserialize(data.getString("name")));
         if(data.has("custom_model_data"))
             meta.setCustomModelData(data.getInt("custom_model_data"));
 

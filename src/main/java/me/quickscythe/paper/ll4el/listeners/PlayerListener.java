@@ -11,6 +11,8 @@ import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -53,7 +55,8 @@ public class PlayerListener implements Listener {
         Player player = e.getEntity();
         boolean boogieKill = false;
         boolean elimination = false;
-        String msg = ChatColor.stripColor(e.getDeathMessage());
+        Component msg = e.deathMessage();
+//        String msg = ChatColor.stripColor(e.getDeathMessage());
         PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
         if (player.getKiller() != null && playerManager.isBoogie(player.getKiller()) && !player.equals(player.getKiller())) {
             playerManager.removeBoogie(player.getKiller());
@@ -64,14 +67,14 @@ public class PlayerListener implements Listener {
             player.setGameMode(GameMode.SPECTATOR);
             player.getWorld().strikeLightningEffect(player.getLocation());
             msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
-            e.getEntity().getServer().broadcast(text(msg));
+            e.getEntity().getServer().broadcast(msg);
             elimination = true;
             playerManager.removeBoogie(player);
             playerManager.setParty(player, "none");
         }
         playerManager.removeLife(player);
         try {
-            sendDeathEmbed(msg, player, boogieKill, elimination);
+            sendDeathEmbed(MessageUtils.plainText(msg), player, boogieKill, elimination);
         } catch (QuickException quickException) {
             CoreUtils.logger().log(Logger.LogLevel.ERROR, "DeathManager", quickException);
         }

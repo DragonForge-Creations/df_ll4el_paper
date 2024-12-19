@@ -33,55 +33,46 @@ public class Utils {
     }
 
     private static void registerPlaceholders() {
-        PlaceholderUtils.registerPlaceholder("lives_color", LifeManager::getLifeColor);
+//        PlaceholderUtils.registerPlaceholder("lives_color", LifeManager::getLifeColor);
 
-        PlaceholderUtils.registerPlaceholder("setting_particles", (player) -> SettingsManager.getSettings(player).particles() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_icon", (player) -> SettingsManager.getSettings(player).icon() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
-        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "&aon" : "&coff");
+        PlaceholderUtils.registerPlaceholder("setting_particles", (player) -> SettingsManager.getSettings(player).particles() ? "on" : "off");
+        PlaceholderUtils.registerPlaceholder("setting_icon", (player) -> SettingsManager.getSettings(player).icon() ? "on" : "off");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "on" : "off");
+        PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "on" : "off");
         PlaceholderUtils.registerPlaceholder("party", (player) -> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "" : DataManager.getConfigManager("players", PlayerManager.class).getParty(player));
-        PlaceholderUtils.registerPlaceholder("party_tag", (player) -> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "&f" : "[" + DataManager.getConfigManager("players", PlayerManager.class).getParty(player) + "]");
-        PlaceholderUtils.registerPlaceholder("party_color", (player) -> {
-            PlayerManager playerManager = DataManager.getConfigManager("players", PlayerManager.class);
-            PartyManager partyManager = DataManager.getConfigManager("parties", PartyManager.class);
-            Party party = partyManager.getParty(playerManager.getParty(player));
-            return playerManager.getParty(player).equalsIgnoreCase("none") ? "&f" : "" + ChatColor.of(party.getColor());
-        });
 
     }
 
     private static void registerMessages() {
-        MessageUtils.addMessage("message.boogie.chat", "&cYou are a Boogie! Kill someone fast to get rid of this effect!");
-        MessageUtils.addMessage("message.boogie.countdown.4", "&c&lBoogie will be selected in...");
-        MessageUtils.addMessage("message.boogie.countdown.3", "&c&l3...");
-        MessageUtils.addMessage("message.boogie.countdown.2", "&c&l2...");
-        MessageUtils.addMessage("message.boogie.countdown.1", "&c&l1...");
-        MessageUtils.addMessage("message.boogie.countdown.0", "&c&lYou are...");
-        MessageUtils.addMessage("message.boogie.countdown.boogie", "&c&la Boogie!");
-        MessageUtils.addMessage("message.boogie.countdown.not", "&a&lNOT a Boogie!");
-        MessageUtils.addMessage("message.boogie.cured", "&aYou've been cured!");
-        MessageUtils.addMessage("action.elimination", "[0] has been eliminated[1]!");
-        MessageUtils.addMessage("cmd.error.player_only", "&cSorry, that is a player only command.");
-        MessageUtils.addMessage("message.lives.more", "&aYou've gained [0] lives.");
-        MessageUtils.addMessage("cmd.loot.create.success", "&aSuccessfully created [0] loot drop at [1].");
-        MessageUtils.addMessage("cmd.life.edit.success", "&aSuccessfully edited the lives of [0].");
-        MessageUtils.addMessage("cmd.boogie.set.success", "&a[0] is now a boogie.");
-        MessageUtils.addMessage("cmd.boogie.roll", "&aNow rolling for [0] boogie(s).");
-        MessageUtils.addMessage("cmd.boogie.remove.success", "&a[0] is no longer a boogie.");
-        MessageUtils.addMessage("cmd.party.join.other", "&a[0] is now in the [1] party.");
-        MessageUtils.addMessage("party.join.success", "&aYou have joined the [0] party.");
-        MessageUtils.addMessage("cmd.party.create", "&aSuccessfully created [0] party.");
-        MessageUtils.addMessage("party.chat.join", "&7Party chat: &aon&7.");
-        MessageUtils.addMessage("party.chat.leave", "&7Party chat: &coff&7.");
-        MessageUtils.addMessage("party.chat.no_party", "&cYou aren't in a party.");
-        MessageUtils.addMessage("error.party.no_party", "&c\"[0]\" doesn't seem to exist. Check your spelling and try again.");
-        MessageUtils.addMessage("cmd.boogie.remove.player", "&a[0] is no longer a boogie.");
-        MessageUtils.addMessage("cmd.loot.create", "&7Punch a block to set loot drop location.");
-        MessageUtils.addMessage("cmd.boogie.remove.all", "&aAll boogies have been removed.");
-        MessageUtils.addMessage("loot.create", "&aSuccessfully created loot drop for [0].");
-        MessageUtils.addMessage("cmd.link.success", "&aSuccessfully linked [0] to [1].");
-        MessageUtils.addMessage("cmd.loot.drop", "&aDropping [0] loot at [1].");
-        MessageUtils.addMessage("cmd.loot.drop.random", "&aDropping random loot.");
+        MessageUtils.addMessage("message.boogie.chat", "{\"text\":\"You are a Boogie! Kill someone fast to get rid of this effect!\",\"color\":\"red\"}");
+        MessageUtils.addMessage("message.boogie.countdown.4", "{\"text\":\"Boogie will be selected in...\",\"bold\":true,\"color\":\"red\"}");
+        MessageUtils.addMessage("message.boogie.countdown.3", "{\"text\":\"3...\",\"color\":\"red\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.countdown.2", "{\"text\":\"2...\",\"color\":\"red\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.countdown.1", "{\"text\":\"1...\",\"color\":\"red\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.countdown.0", "{\"text\":\"You are...\",\"color\":\"red\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.countdown.boogie", "{\"text\":\"a Boogie!\",\"color\":\"red\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.countdown.not", "{\"text\":\"NOT a Boogie!\",\"color\":\"green\",\"bold\":true}");
+        MessageUtils.addMessage("message.boogie.cured", "{\"text\":\"You've been cured!\",\"color\":\"green\"}");
+        MessageUtils.addMessage("action.elimination", "{\"text\":\"[0] has been eliminated[1]!\"}");
+        MessageUtils.addMessage("message.lives.more", "{\"text\":\"You've gained [0] lives.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.loot.create.success", "{\"text\":\"Successfully created [0] loot drop at [1].\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.loot.drop", "{\"text\":\"Dropping [0] loot at [1].\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.loot.drop.random", "{\"text\":\"Dropping random loot.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.link.success", "{\"text\":\"Successfully linked [0] to [1].\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.life.edit.success", "{\"text\":\"Successfully edited the lives of [0].\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.boogie.set.success", "{\"text\":\"[0] is now a boogie.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.boogie.remove.success", "{\"text\":\"[0] is no longer a boogie.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.boogie.roll", "{\"text\":\"Now rolling for [0] boogie(s).\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.boogie.remove.all", "{\"text\":\"All boogies have been removed.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.party.create", "{\"text\":\"Successfully created [0] party.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("party.join.success", "{\"text\":\"You have joined the [0] party.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.party.join.other", "{\"text\":\"[0] is now in the [1] party.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("party.chat.join", "{\"text\":\"Party chat: \",\"color\":\"gray\",\"extra\":[{\"text\":\"on\",\"color\":\"green\"}]}");
+        MessageUtils.addMessage("party.chat.leave", "{\"text\":\"Party chat: \",\"color\":\"gray\",\"extra\":[{\"text\":\"off\",\"color\":\"red\"}]}");
+        MessageUtils.addMessage("party.chat.no_party", "{\"text\":\"You aren't in a party.\",\"color\":\"red\"}");
+        MessageUtils.addMessage("error.party.no_party", "{\"text\":\"[0] doesn't seem to exist. Check your spelling and try again.\",\"color\":\"red\"}");
+        MessageUtils.addMessage("cmd.loot.create", "{\"text\":\"Punch a block to set loot drop location.\",\"color\":\"gray\"}");
+        MessageUtils.addMessage("loot.create", "{\"text\":\"Successfully created loot drop for [0].\",\"color\":\"green\"}");
 
     }
 

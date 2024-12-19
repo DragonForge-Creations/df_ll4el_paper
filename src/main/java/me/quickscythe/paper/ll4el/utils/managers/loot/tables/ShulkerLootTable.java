@@ -1,15 +1,11 @@
 package me.quickscythe.paper.ll4el.utils.managers.loot.tables;
 
 import json2.JSONObject;
-import me.quickscythe.dragonforge.utils.gui.GuiInventory;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootTable;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
