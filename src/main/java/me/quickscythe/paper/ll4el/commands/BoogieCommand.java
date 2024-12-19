@@ -19,6 +19,7 @@ import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
 
 
+
 public class BoogieCommand extends CommandExecutor {
     public BoogieCommand(JavaPlugin plugin) {
         super(plugin, "boogie");

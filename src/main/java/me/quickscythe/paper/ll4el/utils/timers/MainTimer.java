@@ -34,7 +34,6 @@ public class MainTimer implements Runnable {
         if (now - lastApiUpdate >= TimeUnit.MILLISECONDS.convert(DonorDriveApi.getDonorTime(), TimeUnit.MINUTES)) {
             lastApiUpdate = now;
             Bukkit.getScheduler().runTaskLater(Utils.plugin(), DonorDriveApi::processDonations, 0);
-//            DonorDriveApi.processDonations();
         }
 
         if (DataManager.getConfigManager("boogies", BoogieManager.class).started())

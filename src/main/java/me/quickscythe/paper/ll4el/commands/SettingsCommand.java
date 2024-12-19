@@ -20,37 +20,34 @@ public class SettingsCommand extends CommandExecutor {
 
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
-        return literal(getName())
-                .executes(context -> showUsage(context, "")).then(argument("setting", StringArgumentType.string())
-                        .suggests((context, builder) -> {
-                            builder.suggest("icon");
-                            builder.suggest("particles");
-                            builder.suggest("chat");
-                            return builder.buildFuture();
-                        })
-                        .executes(context -> {
-                            String setting = StringArgumentType.getString(context, "setting");
-                            CommandSender sender = context.getSource().getSender();
-                            if(!(sender instanceof Player player)){
-                                return logError(sender, "You must be a player to use this command.");
-                            }
-                            if(setting.equalsIgnoreCase("particles")){
-                                SettingsManager.Settings set = SettingsManager.getSettings(player);
-                                set.particles(!set.particles());
-                                SettingsManager.setSettings(player, set);
-                            }
-                            if(setting.equalsIgnoreCase("icon")){
-                                SettingsManager.Settings set = SettingsManager.getSettings(player);
-                                set.icon(!set.icon());
-                                SettingsManager.setSettings(player, set);
-                            }
-                            if(setting.equalsIgnoreCase("chat")){
-                                SettingsManager.Settings set = SettingsManager.getSettings(player);
-                                set.chat(!set.chat());
-                                SettingsManager.setSettings(player, set);
-                            }
+        return literal(getName()).executes(context -> showUsage(context, "")).then(argument("setting", StringArgumentType.string()).suggests((context, builder) -> {
+            builder.suggest("icon");
+            builder.suggest("particles");
+            builder.suggest("chat");
+            return builder.buildFuture();
+        }).executes(context -> {
+            String setting = StringArgumentType.getString(context, "setting");
+            CommandSender sender = context.getSource().getSender();
+            if (!(sender instanceof Player player)) {
+                return logError(sender, "You must be a player to use this command.");
+            }
+            if (setting.equalsIgnoreCase("particles")) {
+                SettingsManager.Settings set = SettingsManager.getSettings(player);
+                set.particles(!set.particles());
+                SettingsManager.setSettings(player, set);
+            }
+            if (setting.equalsIgnoreCase("icon")) {
+                SettingsManager.Settings set = SettingsManager.getSettings(player);
+                set.icon(!set.icon());
+                SettingsManager.setSettings(player, set);
+            }
+            if (setting.equalsIgnoreCase("chat")) {
+                SettingsManager.Settings set = SettingsManager.getSettings(player);
+                set.chat(!set.chat());
+                SettingsManager.setSettings(player, set);
+            }
 
-                            return Command.SINGLE_SUCCESS;
-                        })).build();
+            return Command.SINGLE_SUCCESS;
+        })).build();
     }
 }

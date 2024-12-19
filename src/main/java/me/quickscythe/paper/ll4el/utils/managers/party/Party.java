@@ -4,18 +4,13 @@ import json2.JSONObject;
 
 import java.awt.*;
 
-public class Party {
-    private final JSONObject data;
+public record Party(String name, JSONObject data) {
 
-    public Party(JSONObject data) {
-        this.data = data;
+    public Color getColor() {
+        return new Color(data.has("color") ? data.getInt("color") : 16777215);
     }
 
     public void setColor(Color yellow) {
         data.put("color", yellow.getRGB());
-    }
-
-    public Color getColor() {
-        return new Color(data.has("color") ? data.getInt("color") : 16777215);
     }
 }

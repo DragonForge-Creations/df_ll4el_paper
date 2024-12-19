@@ -34,20 +34,9 @@ public class PartyManager extends ConfigManager {
         JSONObject data = new JSONObject();
         config().getData().put(name, data);
         config().save();
-        return new Party(data);
+        return new Party(name, data);
     }
 
-    public Party getParty(String name) {
-        try {
-            return new Party(!name.equalsIgnoreCase("none") ? config().getData().getJSONObject(name) : new JSONObject());
-        } catch (NullPointerException ex) {
-            throw new NullPointerException("Couldn't find party: " + name);
-        }
-    }
-
-    public void removeParty(String name) {
-        config().getData().remove(name);
-    }
 
     public boolean inPartyChat(OfflinePlayer player) {
         return in_chat.contains(player.getUniqueId());
@@ -81,13 +70,5 @@ public class PartyManager extends ConfigManager {
 
     public List<String> getParties() {
         return new ArrayList<>(config().getData().keySet());
-    }
-
-    public List<UUID> getPlayers(String party) {
-        List<UUID> uids = new ArrayList<>();
-        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        for (UUID uid : playerManager.getPlayers())
-            if (playerManager.getParty(Bukkit.getOfflinePlayer(uid)).equalsIgnoreCase(party)) uids.add(uid);
-        return uids;
     }
 }

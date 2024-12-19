@@ -22,11 +22,11 @@ import static net.kyori.adventure.text.Component.text;
 
 public abstract class LootTable {
 
-    private final LootTableType type;
+    private final LootType type;
     private final String name;
     private final JSONObject data;
 
-    public LootTable(String name, JSONObject data, LootTableType type) {
+    public LootTable(String name, JSONObject data, LootType type) {
         this.type = type;
         this.name = name;
         this.data = data;
@@ -36,7 +36,7 @@ public abstract class LootTable {
         return name;
     }
 
-    public LootTableType type() {
+    public LootType type() {
         return type;
     }
 
@@ -94,10 +94,6 @@ public abstract class LootTable {
             itemStack.setItemMeta(meta);
         }
         return itemStack;
-    }
-
-    public enum LootTableType {
-        SHULKER_BOX, COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, BOSS
     }
 
 

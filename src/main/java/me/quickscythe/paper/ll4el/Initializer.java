@@ -11,8 +11,6 @@ public final class Initializer extends JavaPlugin {
 
     @Override
     public void onEnable() {
-//        getServer().getConsoleSender().sendMessage(GsonComponentSerializer.gson().deserialize("{\"text\":\"[Last Life] Plugin enabled.\",\"color\":\"green\"}"));
-
         // Plugin startup logic
         Utils.init(this);
 

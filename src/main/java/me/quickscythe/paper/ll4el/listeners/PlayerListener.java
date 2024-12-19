@@ -12,10 +12,7 @@ import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import static net.kyori.adventure.text.Component.text;
+import java.util.Objects;
 
 public class PlayerListener implements Listener {
     public PlayerListener(Initializer plugin) {
@@ -39,10 +36,10 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if(e.getAction().isLeftClick()){
+        if (e.getAction().isLeftClick()) {
             LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
-            if(lootManager.isEditing(e.getPlayer())){
-                lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), e.getClickedBlock().getLocation());
+            if (lootManager.isEditing(e.getPlayer())) {
+                lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), Objects.requireNonNull(e.getClickedBlock()).getLocation());
                 e.getPlayer().sendMessage(MessageUtils.getMessage("loot.create", lootManager.getEditingLocation(e.getPlayer())));
                 lootManager.finishEditing(e.getPlayer());
                 e.setCancelled(true);
@@ -51,7 +48,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e)  {
+    public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
         boolean boogieKill = false;
         boolean elimination = false;
@@ -66,7 +63,7 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
             player.setGameMode(GameMode.SPECTATOR);
             player.getWorld().strikeLightningEffect(player.getLocation());
-            msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) player.getMetadata("last_damager").get(0).value()).getName() : ""));
+            msg = MessageUtils.getMessage("action.elimination", player.getName(), (player.hasMetadata("last_damager") ? " by " + ((Player) Objects.requireNonNull(player.getMetadata("last_damager").getFirst().value())).getName() : ""));
             e.getEntity().getServer().broadcast(msg);
             elimination = true;
             playerManager.removeBoogie(player);

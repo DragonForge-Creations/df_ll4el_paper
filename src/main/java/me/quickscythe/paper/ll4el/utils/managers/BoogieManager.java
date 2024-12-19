@@ -27,7 +27,7 @@ public class BoogieManager extends ConfigManager {
 
     }
 
-    public boolean started(){
+    public boolean started() {
         return started;
     }
 
@@ -36,25 +36,13 @@ public class BoogieManager extends ConfigManager {
         int check = 0;
         while (selected < amount && check < 2) {
             check = check + 1;
-            Player pot = (Player) ((List) Bukkit.getOnlinePlayers()).get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
+            Player pot = (Player) ((List<?>) Bukkit.getOnlinePlayers()).get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
             JSONObject potd = ((PlayerManager) DataManager.getConfigManager("players")).getPlayerData(pot);
             if (!potd.getBoolean("boogie") && new Date().getTime() - potd.getLong("last_selected") > 10000) {
                 selected = selected + 1;
                 ((PlayerManager) DataManager.getConfigManager("players")).setBoogie(pot);
             }
         }
-    }
-
-
-
-
-    public List<UUID> getBoogies() {
-        List<UUID> uids = new ArrayList<>();
-        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        for (UUID uid : playerManager.getPlayers())
-            if (playerManager.isBoogie(Bukkit.getOfflinePlayer(uid))) uids.add(uid);
-        return uids;
-
     }
 
     public void startSession() {

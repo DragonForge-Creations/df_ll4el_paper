@@ -17,7 +17,6 @@ import me.quickscythe.paper.ll4el.utils.managers.loot.LootType;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -204,9 +203,6 @@ public class DonorDriveApi {
         }
     }
 
-    public static JSONArray getParticipants() {
-        return participants;
-    }
 
     private static JSONObject getUsers() {
         if (!config.getData().has("users")) {
@@ -226,39 +222,10 @@ public class DonorDriveApi {
         return null;
     }
 
-    public static JSONObject getParticipant(UUID uid) {
-        JSONObject users = getUsers();
-        if (users.has(uid.toString())) {
-            long participantId = users.getLong(uid.toString());
-            for (int i = 0; i < participants.length(); i++) {
-                JSONObject participant = participants.getJSONObject(i);
-                if (participant.getLong("participantID") == participantId) {
-                    return participant;
-                }
-            }
-        }
-        CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't find participant for " + uid);
-        return null;
-    }
-
     public static void linkParticipant(OfflinePlayer player, long participantId) {
         JSONObject users = getUsers();
         users.put(player.getUniqueId().toString(), participantId);
         config.save();
-    }
-
-    public static JSONArray getDonations(long participantId) {
-        String url = "https://" + config.getData().getString("domain") + "/api/participants/" + participantId + "/donations";
-        InputStream inputStream = NetworkUtils.downloadFile(url);
-        try {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                String response = reader.lines().collect(Collectors.joining("\n"));
-                return new JSONArray(response);
-            }
-        } catch (IOException ex) {
-            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't reach DonorDrive API. Double check your config.");
-            return new JSONArray();
-        }
     }
 
     public static JSONArray getTeamDonations() {
@@ -296,7 +263,7 @@ public class DonorDriveApi {
         LOOT("ID:77815"),
         OTHER("*");
 
-        String id;
+        final String id;
 
         IncentiveType(String id) {
             this.id = id;

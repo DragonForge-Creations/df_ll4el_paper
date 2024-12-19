@@ -23,46 +23,36 @@ public class LifeCommand extends CommandExecutor {
 
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
-        return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life")))
-                .then(argument("operator", StringArgumentType.string())
-                        .executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life")))
-                        .suggests((context, builder) -> {
-                            builder.suggest("set");
-                            builder.suggest("add");
-                            builder.suggest("remove");
-                            return builder.buildFuture();
-                        }).then(argument("player", StringArgumentType.string())
-                                .executes(context -> {
-                                    String operator = context.getArgument("operator", String.class);
-                                    if (operator.equalsIgnoreCase("set"))
-                                        return logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"));
-                                    int amount = operator.equalsIgnoreCase("remove") ? -1 : 1;
-                                    String player = context.getArgument("player", String.class);
-                                    DataManager.getConfigManager("players", PlayerManager.class).editLife(Bukkit.getPlayer(player), amount);
-                                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
-                                    return 1;
-                                })
-                                .suggests((context, builder) -> {
-                                    Bukkit.getOnlinePlayers().forEach(player -> builder.suggest(player.getName()));
-                                    return builder.buildFuture();
-                                }).then(argument("amount", IntegerArgumentType.integer())
-                                        .executes(context -> {
-                                            String operator = context.getArgument("operator", String.class);
-                                            int amount = context.getArgument("amount", Integer.class);
-                                            String player = context.getArgument("player", String.class);
-                                            PlayerManager man = DataManager.getConfigManager("players", PlayerManager.class);
-                                            if (operator.equalsIgnoreCase("set")) {
-                                                man.setLife(Bukkit.getOfflinePlayer(player), amount);
-                                                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
-                                            } else {
-                                                man.editLife(Bukkit.getPlayer(player), amount * (operator.equalsIgnoreCase("remove") ? -1 : 1));
-                                                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
-                                            }
-                                            return 1;
-                                        })
-                                )
-                        )
-                )
-                .build();
+        return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"))).then(argument("operator", StringArgumentType.string()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"))).suggests((context, builder) -> {
+            builder.suggest("set");
+            builder.suggest("add");
+            builder.suggest("remove");
+            return builder.buildFuture();
+        }).then(argument("player", StringArgumentType.string()).executes(context -> {
+            String operator = context.getArgument("operator", String.class);
+            if (operator.equalsIgnoreCase("set"))
+                return logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"));
+            int amount = operator.equalsIgnoreCase("remove") ? -1 : 1;
+            String player = context.getArgument("player", String.class);
+            DataManager.getConfigManager("players", PlayerManager.class).editLife(Bukkit.getPlayer(player), amount);
+            CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
+            return 1;
+        }).suggests((context, builder) -> {
+            Bukkit.getOnlinePlayers().forEach(player -> builder.suggest(player.getName()));
+            return builder.buildFuture();
+        }).then(argument("amount", IntegerArgumentType.integer()).executes(context -> {
+            String operator = context.getArgument("operator", String.class);
+            int amount = context.getArgument("amount", Integer.class);
+            String player = context.getArgument("player", String.class);
+            PlayerManager man = DataManager.getConfigManager("players", PlayerManager.class);
+            if (operator.equalsIgnoreCase("set")) {
+                man.setLife(Bukkit.getOfflinePlayer(player), amount);
+                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
+            } else {
+                man.editLife(Bukkit.getPlayer(player), amount * (operator.equalsIgnoreCase("remove") ? -1 : 1));
+                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
+            }
+            return 1;
+        })))).build();
     }
 }

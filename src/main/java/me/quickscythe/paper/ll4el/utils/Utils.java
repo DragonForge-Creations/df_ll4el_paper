@@ -6,10 +6,8 @@ import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.*;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
-import me.quickscythe.paper.ll4el.utils.managers.party.Party;
 import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 
 public class Utils {
@@ -33,14 +31,11 @@ public class Utils {
     }
 
     private static void registerPlaceholders() {
-//        PlaceholderUtils.registerPlaceholder("lives_color", LifeManager::getLifeColor);
-
         PlaceholderUtils.registerPlaceholder("setting_particles", (player) -> SettingsManager.getSettings(player).particles() ? "on" : "off");
         PlaceholderUtils.registerPlaceholder("setting_icon", (player) -> SettingsManager.getSettings(player).icon() ? "on" : "off");
         PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "on" : "off");
         PlaceholderUtils.registerPlaceholder("setting_chat", (player) -> SettingsManager.getSettings(player).chat() ? "on" : "off");
         PlaceholderUtils.registerPlaceholder("party", (player) -> DataManager.getConfigManager("players", PlayerManager.class).getParty(player).equalsIgnoreCase("none") ? "" : DataManager.getConfigManager("players", PlayerManager.class).getParty(player));
-
     }
 
     private static void registerMessages() {
@@ -61,7 +56,7 @@ public class Utils {
         MessageUtils.addMessage("cmd.link.success", "{\"text\":\"Successfully linked [0] to [1].\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.life.edit.success", "{\"text\":\"Successfully edited the lives of [0].\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.boogie.set.success", "{\"text\":\"[0] is now a boogie.\",\"color\":\"green\"}");
-        MessageUtils.addMessage("cmd.boogie.remove.success", "{\"text\":\"[0] is no longer a boogie.\",\"color\":\"green\"}");
+        MessageUtils.addMessage("cmd.boogie.remove.player", "{\"text\":\"[0] is no longer a boogie.\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.boogie.roll", "{\"text\":\"Now rolling for [0] boogie(s).\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.boogie.remove.all", "{\"text\":\"All boogies have been removed.\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.party.create", "{\"text\":\"Successfully created [0] party.\",\"color\":\"green\"}");
@@ -75,9 +70,6 @@ public class Utils {
         MessageUtils.addMessage("loot.create", "{\"text\":\"Successfully created loot drop for [0].\",\"color\":\"green\"}");
 
     }
-
-
-
 
     public static Initializer plugin() {
         return plugin;

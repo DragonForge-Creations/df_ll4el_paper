@@ -17,7 +17,6 @@ public class PlayerManager extends ConfigManager {
         super(plugin, "players");
     }
 
-   
 
     public void checkData(OfflinePlayer player) {
         if (!config().getData().has(String.valueOf(player.getUniqueId()))) {
@@ -41,14 +40,6 @@ public class PlayerManager extends ConfigManager {
         config().save();
     }
 
-
-    public UUID getUUID(String lastUsername) {
-        for (String sid : config().getData().keySet()) {
-            if (config().getData().getJSONObject(sid).get("name").equals(lastUsername)) return UUID.fromString(sid);
-        }
-        return null;
-    }
-
     public JSONObject getPlayerData(OfflinePlayer player) {
         return config().getData().getJSONObject(String.valueOf(player.getUniqueId()));
     }
@@ -57,13 +48,13 @@ public class PlayerManager extends ConfigManager {
         config().getData().put(String.valueOf(player.getUniqueId()), json);
     }
 
-    public String getParty(OfflinePlayer player){
+    public String getParty(OfflinePlayer player) {
         return config().getData().getJSONObject(String.valueOf(player.getUniqueId())).getString("party");
     }
 
-    public void setParty(OfflinePlayer player, String party){
-        setPlayerData(player, getPlayerData(player).put("party",party));
-        if(player.isOnline() && !party.equalsIgnoreCase("none"))
+    public void setParty(OfflinePlayer player, String party) {
+        setPlayerData(player, getPlayerData(player).put("party", party));
+        if (player.isOnline() && !party.equalsIgnoreCase("none"))
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("party.join.success", party));
     }
 
@@ -76,7 +67,8 @@ public class PlayerManager extends ConfigManager {
         JSONObject pd = getPlayerData(player);
         pd.put("boogie", false);
         pd.put("last_selected", new Date().getTime());
-        if (player.isOnline()) Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.cured"));
+        if (player.isOnline())
+            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.cured"));
         setPlayerData(player, pd);
     }
 
@@ -85,7 +77,7 @@ public class PlayerManager extends ConfigManager {
         return getPlayerData(player).getInt("lives");
     }
 
-    public  void removeLife(OfflinePlayer player) {
+    public void removeLife(OfflinePlayer player) {
         editLife(player, -1);
     }
 
@@ -111,7 +103,7 @@ public class PlayerManager extends ConfigManager {
         if (i > 0 && player.isOnline()) {
             int cmd = 1000 + i;
             if (animation) CoreUtils.playTotemAnimation(player.getPlayer(), cmd);
-            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.lives.more", i +""));
+            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.lives.more", i + ""));
         }
     }
 
@@ -159,8 +151,8 @@ public class PlayerManager extends ConfigManager {
         pd.put("boogie", true);
         pd.put("last_selected", new Date().getTime());
         setPlayerData(player, pd);
-        if(player.isOnline()){
-            player.getPlayer().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, SoundCategory.PLAYERS, 10F, 1F);
+        if (player.isOnline()) {
+            Objects.requireNonNull(player.getPlayer()).playSound(Objects.requireNonNull(player.getLocation()), Sound.ENTITY_WITHER_DEATH, SoundCategory.PLAYERS, 10F, 1F);
         }
         if (SettingsManager.getSettings(player).chat() && player.isOnline())
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.chat"));

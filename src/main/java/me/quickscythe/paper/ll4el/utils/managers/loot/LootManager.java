@@ -19,11 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 
 public class LootManager extends ConfigManager {
-    Map<String, LootTable> tables_map = new HashMap<>();
 
-    Map<UUID, String> editing = new HashMap<>();
-
-    String last_drop = null;
+    private final Map<String, LootTable> tables_map = new HashMap<>();
+    private final Map<UUID, String> editing = new HashMap<>();
+    private String last_drop = null;
 
     public LootManager(JavaPlugin plugin) {
         super(plugin, "loot");
@@ -42,10 +41,6 @@ public class LootManager extends ConfigManager {
             if (s.equalsIgnoreCase("shulkers")) continue;
             tables_map.put(s, new CommonLootTable(s, tables.getData().getJSONObject(s)));
         }
-    }
-
-    public LootTable getLootTable(String name) {
-        return tables_map.get(name);
     }
 
     public void createDrop(String name, Location location) {
@@ -78,7 +73,6 @@ public class LootManager extends ConfigManager {
                         if (container instanceof ShulkerBox) continue;
                         tables_map.get("common").loadInventory(container.getInventory());
                         CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
-//                            return;
                     }
                 }
             }
@@ -101,13 +95,6 @@ public class LootManager extends ConfigManager {
     public String getEditingLocation(Player player) {
 
         return editing.getOrDefault(player.getUniqueId(), null);
-    }
-
-    public Location[] getLocations() {
-        List<Location> locations = new ArrayList<>();
-        config().getData().keySet().forEach(s -> locations.add(CoreUtils.decryptLocation(config().getData().getString(s))));
-//        locations.add(CoreUtils.decryptLocation(s)));
-        return locations.toArray(new Location[0]);
     }
 
     public void randomDrop(LootType type) {

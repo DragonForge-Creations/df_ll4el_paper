@@ -8,6 +8,7 @@ import me.quickscythe.dragonforge.commands.CommandExecutor;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
+import me.quickscythe.paper.ll4el.utils.managers.party.Party;
 import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -143,8 +144,8 @@ public class PartyCommand extends CommandExecutor {
                     sender.sendMessage(text("/" + getName() + " create <party> ").color(NamedTextColor.GREEN).append(text("- Creates a party.").color(NamedTextColor.GRAY)));
                     return Command.SINGLE_SUCCESS;
                 }
-                ((PartyManager) DataManager.getConfigManager("parties")).createParty(arg2);
-                sender.sendMessage(MessageUtils.getMessage("cmd.party.create", arg2));
+                Party party = ((PartyManager) DataManager.getConfigManager("parties")).createParty(arg2);
+                sender.sendMessage(MessageUtils.getMessage("cmd.party.create", party.name()));
                 return Command.SINGLE_SUCCESS;
             }
             if (action.equalsIgnoreCase("join")) {
