@@ -14,6 +14,8 @@ import java.util.*;
 
 public class BoogieManager extends ConfigManager {
 
+    boolean started = false;
+
     public BoogieManager(JavaPlugin plugin) {
         super(plugin, "boogies");
     }
@@ -24,6 +26,10 @@ public class BoogieManager extends ConfigManager {
 
         } else selectBoogies(amount);
 
+    }
+
+    public boolean started(){
+        return started;
     }
 
     public void selectBoogies(int amount) {
@@ -50,5 +56,13 @@ public class BoogieManager extends ConfigManager {
             if (playerManager.isBoogie(Bukkit.getOfflinePlayer(uid))) uids.add(uid);
         return uids;
 
+    }
+
+    public void startSession() {
+        started = true;
+    }
+
+    public void stopSession() {
+        started = false;
     }
 }

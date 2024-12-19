@@ -1,9 +1,9 @@
 package me.quickscythe.paper.ll4el.utils.timers;
 
-import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
 import me.quickscythe.paper.ll4el.utils.Utils;
+import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import net.md_5.bungee.api.ChatMessageType;
@@ -17,9 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 public class MainTimer implements Runnable {
 
-    protected Particle.DustOptions dustoptions = new Particle.DustOptions(Color.RED, 1);
     private final PlayerManager playerManager;
+    protected Particle.DustOptions dustoptions = new Particle.DustOptions(Color.RED, 1);
     private long lastApiUpdate = 0;
+    private long lastBoogieUpdate = 0;
 
     public MainTimer() {
         this.playerManager = (PlayerManager) DataManager.getConfigManager("players");
@@ -30,12 +31,17 @@ public class MainTimer implements Runnable {
     public void run() {
 
         long now = System.currentTimeMillis();
-        if(now - lastApiUpdate >= TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES)) {
+        if (now - lastApiUpdate >= TimeUnit.MILLISECONDS.convert(DonorDriveApi.getDonorTime(), TimeUnit.MINUTES)) {
             lastApiUpdate = now;
-            DonorDriveApi.processDonations();
-            // Update the DonorDrive API
-            // DonorDriveApi.updateParticipants();
+            Bukkit.getScheduler().runTaskLater(Utils.plugin(), DonorDriveApi::processDonations, 0);
+//            DonorDriveApi.processDonations();
         }
+
+        if (DataManager.getConfigManager("boogies", BoogieManager.class).started())
+            if (now - lastBoogieUpdate >= TimeUnit.MILLISECONDS.convert(DonorDriveApi.getBoogieTimer(), TimeUnit.MINUTES)) {
+                lastBoogieUpdate = now;
+                Bukkit.getScheduler().runTaskLater(Utils.plugin(), DonorDriveApi::rollBoogies, 0);
+            }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (playerManager.isBoogie(player)) {

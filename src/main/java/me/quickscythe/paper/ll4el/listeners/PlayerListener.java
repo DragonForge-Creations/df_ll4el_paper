@@ -1,13 +1,19 @@
 package me.quickscythe.paper.ll4el.listeners;
 
+import json2.JSONArray;
+import json2.JSONObject;
 import me.quickscythe.dragonforge.exceptions.QuickException;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.network.WebhookUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,7 +49,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e) throws QuickException {
+    public void onPlayerDeath(PlayerDeathEvent e)  {
         Player player = e.getEntity();
         boolean boogieKill = false;
         boolean elimination = false;
@@ -64,11 +70,39 @@ public class PlayerListener implements Listener {
             playerManager.setParty(player, "none");
         }
         playerManager.removeLife(player);
-        WebhookUtils.send("deaths",
-                msg + " " +
-                        "(Lives remaining: " + playerManager.getLives(player) + ")" +
-                        (boogieKill ? "(Boogie Kill)" : "") + " " +
-                        (elimination ? "(Elimination)" : ""));
+        try {
+            sendDeathEmbed(msg, player, boogieKill, elimination);
+        } catch (QuickException quickException) {
+            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DeathManager", quickException);
+        }
+    }
 
+    private void sendDeathEmbed(String msg, Player player, boolean boogieKill, boolean elimination) throws QuickException {
+        JSONObject embed = new JSONObject();
+        PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
+        embed.put("title", player.getName() + " has died!");
+        embed.put("description", msg);
+        embed.put("fields", new JSONArray());
+        JSONObject f_lives = new JSONObject();
+        f_lives.put("name", "Lives");
+        f_lives.put("value", String.valueOf(playerManager.getLives(player)));
+
+        JSONObject f_boogie = new JSONObject();
+        f_boogie.put("name", "Boogie Kill");
+        f_boogie.put("value", String.valueOf(boogieKill));
+
+        JSONObject f_elim = new JSONObject();
+        f_elim.put("name", "Elimination");
+        f_elim.put("value", String.valueOf(elimination));
+
+        embed.getJSONArray("fields").put(f_lives);
+        embed.getJSONArray("fields").put(f_boogie);
+        embed.getJSONArray("fields").put(f_elim);
+
+        embed.put("color", TextColor.color(0xE9334B).value());
+        JSONObject send = new JSONObject();
+        send.put("embeds", new JSONArray());
+        send.getJSONArray("embeds").put(embed);
+        WebhookUtils.send("deaths", send);
     }
 }

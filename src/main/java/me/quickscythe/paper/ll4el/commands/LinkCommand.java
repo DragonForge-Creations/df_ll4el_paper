@@ -6,6 +6,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
 import org.bukkit.Bukkit;
@@ -54,7 +56,7 @@ public class LinkCommand extends CommandExecutor {
 
             OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
             DonorDriveApi.linkParticipant(target, participantId);
-            context.getSource().getSender().sendMessage(MessageUtils.getMessage("cmd.link.success", target.getName(), participant.getString("displayName")));
+            CoreUtils.logger().log(Logger.LogLevel.INFO, "Link", MessageUtils.getMessage("cmd.link.success", target.getName(), participant.getString("displayName")), context.getSource().getSender());
             return 1;
         }).suggests((context, builder) -> {
             if (context.getSource().getSender().hasPermission("ll4el.link.others")) {

@@ -20,9 +20,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 
 public class LootManager extends ConfigManager {
-    static Map<String, LootTable> tables_map = new HashMap<>();
+    Map<String, LootTable> tables_map = new HashMap<>();
 
     Map<UUID, String> editing = new HashMap<>();
+
+    String last_drop = null;
 
     public LootManager(JavaPlugin plugin) {
         super(plugin, "loot");
@@ -51,19 +53,22 @@ public class LootManager extends ConfigManager {
         config().getData().put(name, CoreUtils.encryptLocation(location));
     }
 
-    public void dropLoot(String name, LootType type) {
-        Location drop = CoreUtils.decryptLocation(config().getData().getString(name));
+    public void dropLoot(String locationName, LootType type) {
+        Location drop = CoreUtils.decryptLocation(config().getData().getString(locationName));
+        if(!drop.isChunkLoaded()){
+            drop.getChunk().load();
+        }
         if (type.equals(LootType.SHULKER)) {
             drop.getBlock().setType(Material.valueOf(DyeColor.values()[new Random().nextInt(DyeColor.values().length)].name() + "_SHULKER_BOX"));
             ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
 
             Inventory inv = box.getInventory();
-            String table_name = tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get();
+            String table_name = getRandomTableName();
             while (table_name.equalsIgnoreCase("common"))
-                table_name = tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get();
+                table_name = getRandomTableName();
             LootTable table = tables_map.get(table_name);
             table.loadInventory(inv);
-            CoreUtils.logger().log("[Loot] Dropped " + table_name + " loot at " + drop);
+            CoreUtils.logger().log("LootManager", "Dropped " + table_name + " loot at " + locationName);
             return;
         }
         if (type.equals(LootType.DEFAULT)) {
@@ -76,11 +81,13 @@ public class LootManager extends ConfigManager {
                         if (loc.getBlock().getState() instanceof Container container) {
                             if(container instanceof ShulkerBox) continue;
                             tables_map.get("common").loadInventory(container.getInventory());
-                            CoreUtils.logger().log("[Loot] Dropped common loot at " + loc);
+                            CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
+                            return;
                         }
                     }
                 }
             }
+
 
         }
 
@@ -109,7 +116,23 @@ public class LootManager extends ConfigManager {
         return locations.toArray(new Location[0]);
     }
 
-    public void randomDrop() {
-        //todo
+    public void randomDrop(LootType type) {
+        String locationName = getRandomLocationName();
+        int i = 0;
+        while(locationName.equals(last_drop)){
+            locationName = getRandomLocationName();
+            i = i + 1;
+            if(i > 5) break;
+        }
+        last_drop = locationName;
+        dropLoot(locationName, type);
+    }
+
+    private String getRandomTableName() {
+        return tables_map.keySet().stream().skip(new Random().nextInt(tables_map.size())).findFirst().get();
+    }
+
+    private String getRandomLocationName() {
+        return new ArrayList<>(config().getData().keySet()).get(new Random().nextInt(config().getData().keySet().size()));
     }
 }

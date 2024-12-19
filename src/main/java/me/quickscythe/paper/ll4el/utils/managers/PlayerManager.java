@@ -63,7 +63,7 @@ public class PlayerManager extends ConfigManager {
 
     public void setParty(OfflinePlayer player, String party){
         setPlayerData(player, getPlayerData(player).put("party",party));
-        if(player.isOnline())
+        if(player.isOnline() && !party.equalsIgnoreCase("none"))
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("party.join.success", party));
     }
 

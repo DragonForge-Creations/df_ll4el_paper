@@ -4,6 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
@@ -24,7 +26,20 @@ public class LootCommand extends CommandExecutor {
 
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
-        return literal(getName()).executes(context -> showUsage(context, "lastlife.admin.loot")).then(argument("action", StringArgumentType.string()).executes(context -> showUsage(context, "lastlife.admin.loot")).suggests((context, builder) -> {
+        return literal(getName()).executes(context -> showUsage(context, "lastlife.admin.loot")).then(argument("action", StringArgumentType.string()).executes(context -> {
+            String action = context.getArgument("action", String.class);
+            if(action.equalsIgnoreCase("drop")){
+                CommandSender sender = context.getSource().getSender();
+                if (sender.hasPermission("lastlife.admin.loot.drop")) {
+                    LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
+                    lm.randomDrop(LootType.DEFAULT);
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop.random"), sender);
+                    return 1;
+                }
+            }
+            showUsage(context, "lastlife.admin.loot");
+            return 1;
+        }).suggests((context, builder) -> {
             CommandSender sender = context.getSource().getSender();
             if (sender.hasPermission("lastlife.admin.loot.drop")) builder.suggest("drop");
             if (sender.hasPermission("lastlife.admin.loot.create")) builder.suggest("create");
@@ -38,6 +53,7 @@ public class LootCommand extends CommandExecutor {
                     LootType type = LootType.DEFAULT;
                     LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
                     lm.dropLoot(location, type);
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", location), sender);
                 }
 
             }
@@ -48,7 +64,7 @@ public class LootCommand extends CommandExecutor {
                 if (sender.hasPermission("lastlife.admin.loot.create")) {
                     LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
                     lm.startEditing(player, location);
-                    player.sendMessage(MessageUtils.getMessage("cmd.loot.create", location));
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.create", location), player);
                 }
             }
             return 1;
@@ -69,6 +85,7 @@ public class LootCommand extends CommandExecutor {
                     LootType type = LootType.valueOf(context.getArgument("type", String.class).toUpperCase());
                     LootManager lm = DataManager.getConfigManager("loot", LootManager.class);
                     lm.dropLoot(location, type);
+                    CoreUtils.logger().log(Logger.LogLevel.INFO,"LootManager", MessageUtils.getMessage("cmd.loot.drop", location), sender);
                 }
             }
 

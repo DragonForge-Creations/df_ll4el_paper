@@ -10,10 +10,7 @@ import me.quickscythe.dragonforge.utils.gui.GuiManager;
 import me.quickscythe.dragonforge.utils.network.WebhookUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
-import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
-import me.quickscythe.paper.ll4el.utils.managers.LifeManager;
-import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
-import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
+import me.quickscythe.paper.ll4el.utils.managers.*;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import me.quickscythe.paper.ll4el.utils.managers.party.Party;
 import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
@@ -33,13 +30,13 @@ public class Utils {
         DataManager.registerConfigManager(new PlayerManager(plugin));
         LifeManager.start();
         DataManager.registerConfigManager(new LootManager(plugin));
+        DataManager.registerConfigManager(new WebhookManager(plugin));
         DonorDriveApi.start();
 
         registerPlaceholders();
         registerGuis();
         registerMessages();
 
-        WebhookUtils.add("deaths", "1316979149541343303", "wPGj4xyv05Hwan6xvuJ4k11jmV3SBVGMAG30-3Hyb7jrRm1xSGYZxUrwoFuhJ6pvLIrL");
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
 

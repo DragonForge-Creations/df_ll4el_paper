@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
+import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
@@ -37,7 +39,7 @@ public class LifeCommand extends CommandExecutor {
                                     int amount = operator.equalsIgnoreCase("remove") ? -1 : 1;
                                     String player = context.getArgument("player", String.class);
                                     DataManager.getConfigManager("players", PlayerManager.class).editLife(Bukkit.getPlayer(player), amount);
-
+                                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
                                     return 1;
                                 })
                                 .suggests((context, builder) -> {
@@ -49,10 +51,13 @@ public class LifeCommand extends CommandExecutor {
                                             int amount = context.getArgument("amount", Integer.class);
                                             String player = context.getArgument("player", String.class);
                                             PlayerManager man = DataManager.getConfigManager("players", PlayerManager.class);
-                                            if (operator.equalsIgnoreCase("set"))
+                                            if (operator.equalsIgnoreCase("set")) {
                                                 man.setLife(Bukkit.getOfflinePlayer(player), amount);
-                                            else
+                                                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
+                                            } else {
                                                 man.editLife(Bukkit.getPlayer(player), amount * (operator.equalsIgnoreCase("remove") ? -1 : 1));
+                                                CoreUtils.logger().log(Logger.LogLevel.INFO, "Life", MessageUtils.getMessage("cmd.life." + operator, amount, player), context.getSource().getSender());
+                                            }
                                             return 1;
                                         })
                                 )
