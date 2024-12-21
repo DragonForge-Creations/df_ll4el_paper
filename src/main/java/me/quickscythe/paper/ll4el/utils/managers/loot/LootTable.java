@@ -50,7 +50,6 @@ public abstract class LootTable {
         ItemStack itemStack = new ItemStack(Material.valueOf(itemData.getString("item").toUpperCase()));
         itemStack.setAmount(itemData.has("amount") ? itemData.getInt("amount") : 1);
         if (itemData.has("components")) {
-            System.out.println(itemData.getJSONObject("components").toString(2));
             ItemMeta meta = itemStack.getItemMeta();
             for (String component : itemData.getJSONObject("components").keySet()) {
                 Object value = itemData.getJSONObject("components").get(component);

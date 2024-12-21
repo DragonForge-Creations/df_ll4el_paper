@@ -6,7 +6,8 @@ import me.quickscythe.dragonforge.exceptions.QuickException;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
-import me.quickscythe.dragonforge.utils.network.WebhookUtils;
+import me.quickscythe.dragonforge.utils.network.discord.WebhookManager;
+import me.quickscythe.dragonforge.utils.network.discord.embed.Embed;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
@@ -37,6 +38,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         if (e.getAction().isLeftClick()) {
+
             LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
             if (lootManager.isEditing(e.getPlayer())) {
                 lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), Objects.requireNonNull(e.getClickedBlock()).getLocation());
@@ -78,31 +80,18 @@ public class PlayerListener implements Listener {
     }
 
     private void sendDeathEmbed(String msg, Player player, boolean boogieKill, boolean elimination) throws QuickException {
-        JSONObject embed = new JSONObject();
+//        JSONObject embed = new JSONObject();
         PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
-        embed.put("title", player.getName() + " has died!");
-        embed.put("description", msg);
-        embed.put("fields", new JSONArray());
-        JSONObject f_lives = new JSONObject();
-        f_lives.put("name", "Lives");
-        f_lives.put("value", String.valueOf(playerManager.getLives(player)));
+        Embed embed = new Embed();
+        embed.title(player.getName() + " has died!");
+        embed.description(msg);
+        embed.addField("Lives", String.valueOf(playerManager.getLives(player)), true);
+        embed.addField("Boogie Kill", String.valueOf(boogieKill), true);
+        embed.addField("Elimination", String.valueOf(elimination), true);
+        embed.color(TextColor.color(0xE9334B).value());
 
-        JSONObject f_boogie = new JSONObject();
-        f_boogie.put("name", "Boogie Kill");
-        f_boogie.put("value", String.valueOf(boogieKill));
+        DataManager.getConfigManager("webhooks", WebhookManager.class).send("deaths", embed);
 
-        JSONObject f_elim = new JSONObject();
-        f_elim.put("name", "Elimination");
-        f_elim.put("value", String.valueOf(elimination));
 
-        embed.getJSONArray("fields").put(f_lives);
-        embed.getJSONArray("fields").put(f_boogie);
-        embed.getJSONArray("fields").put(f_elim);
-
-        embed.put("color", TextColor.color(0xE9334B).value());
-        JSONObject send = new JSONObject();
-        send.put("embeds", new JSONArray());
-        send.getJSONArray("embeds").put(embed);
-        WebhookUtils.send("deaths", send);
     }
 }

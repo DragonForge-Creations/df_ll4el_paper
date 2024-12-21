@@ -6,14 +6,14 @@ import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
+
+import static net.kyori.adventure.text.Component.text;
 
 public class MainTimer implements Runnable {
 
@@ -47,7 +47,7 @@ public class MainTimer implements Runnable {
                 if (SettingsManager.getSettings(player).particles())
                     player.spawnParticle(Particle.DUST, player.getLocation(), 1, dustoptions);
                 if (SettingsManager.getSettings(player).icon())
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("                                                                                          \ue001").create());
+                    player.sendActionBar(text("                                                                                          \ue001"));
                 if (playerManager.getLives(player) < 1) playerManager.removeBoogie(player);
             }
         }

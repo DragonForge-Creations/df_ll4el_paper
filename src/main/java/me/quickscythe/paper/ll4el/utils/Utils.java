@@ -1,10 +1,14 @@
 package me.quickscythe.paper.ll4el.utils;
 
+import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
-import me.quickscythe.paper.ll4el.utils.managers.*;
+import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
+import me.quickscythe.paper.ll4el.utils.managers.LifeManager;
+import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
+import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
@@ -21,11 +25,12 @@ public class Utils {
         DataManager.registerConfigManager(new PlayerManager(plugin));
         LifeManager.start();
         DataManager.registerConfigManager(new LootManager(plugin));
-        DataManager.registerConfigManager(new WebhookManager(plugin));
         DonorDriveApi.start();
 
         registerPlaceholders();
         registerMessages();
+
+        CoreUtils.packServer().setUrl("https://ci.vanillaflux.com/view/DragonForge%20Creations/job/df_ll4el_resources/lastSuccessfulBuild/artifact/resources.zip");
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }

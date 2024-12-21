@@ -8,7 +8,8 @@ import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.config.ConfigFile;
 import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import me.quickscythe.dragonforge.utils.network.NetworkUtils;
-import me.quickscythe.dragonforge.utils.network.WebhookUtils;
+import me.quickscythe.dragonforge.utils.network.discord.WebhookManager;
+import me.quickscythe.dragonforge.utils.network.discord.embed.Embed;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
@@ -78,7 +79,9 @@ public class DonorDriveApi {
                         triggerLootDrop();
                     }
                     processedDonations.getData().put("last_drop", last_drop + newDrops);
+                    sendLootDropWebhook(newDrops);
                 }
+
                 long participantId = donation.has("participantID") ? donation.getLong("participantID") : 0L;
                 if (donation.has("incentiveID") && participantId != 0) {
                     CoreUtils.logger().log("DonationProcessor", "Donation has incentive ID");
@@ -90,22 +93,26 @@ public class DonorDriveApi {
 
                     IncentiveType type = IncentiveType.fromDescription(incentiveData.getString("description"));
                     CoreUtils.logger().log("DonationProcessor", "Incentive type: " + type);
+
                     switch (type) {
                         case BOOGIE:
                             queuedBoogies = queuedBoogies + 1;
                             break;
                         case LIFE:
                             JSONObject users = getUsers();
+                            OfflinePlayer player = null;
                             for (String key : users.keySet()) {
                                 if (users.getLong(key) == participantId) {
-                                    OfflinePlayer player = Utils.plugin().getServer().getOfflinePlayer(UUID.fromString(key));
+                                    player = Utils.plugin().getServer().getOfflinePlayer(UUID.fromString(key));
                                     PlayerManager playerManager = DataManager.getConfigManager("players", PlayerManager.class);
                                     playerManager.addLife(player);
                                 }
                             }
+                            sendIncentiveWebhook(type, player);
                             break;
                         case LOOT:
                             DataManager.getConfigManager("loot", LootManager.class).randomDrop(LootType.SHULKER);
+                            sendIncentiveWebhook(type, null);
                             break;
                         case OTHER:
                             break;
@@ -121,35 +128,49 @@ public class DonorDriveApi {
 
     }
 
-    private static void sendDonationWebhook(JSONObject donation) {
-        JSONObject embed = new JSONObject();
-        embed.put("title", "Donation Received");
-        embed.put("description", "A donation of $" + donation.getDouble("amount") + " was received.");
-        embed.put("color", TextColor.color(0x31D9D9).value());
-        embed.put("url", donation.getJSONObject("links").getString("recipient"));
-        embed.put("image", new JSONObject().put("url", donation.getString("recipientImageURL")));
-
-        JSONArray fields = new JSONArray();
-        if(donation.has("message") && donation.get("message") instanceof String){
-            JSONObject f_message = new JSONObject();
-            f_message.put("name", "Message");
-            f_message.put("value", donation.getString("message"));
-            fields.put(f_message);
+    private static void sendIncentiveWebhook(IncentiveType type, OfflinePlayer player) {
+        Embed embed = new Embed();
+        embed.title("Incentive Triggered");
+        embed.description("A donation has triggered the " + type.name().toLowerCase() + " incentive.");
+        embed.color(TextColor.color(0xCD25D9).value());
+        if(player != null){
+            embed.addField("Player", player.getName(), false);
         }
-
-        JSONObject f_recipient = new JSONObject();
-        f_recipient.put("name", "Recipient");
-        f_recipient.put("value", donation.getString("recipientName"));
-        fields.put(f_recipient);
-
-
-        embed.put("fields", fields);
-
-
-        JSONObject send = new JSONObject();
-        send.put("embeds", new JSONArray().put(embed));
         try {
-            WebhookUtils.send("donations", send);
+            DataManager.getConfigManager("webhooks", WebhookManager.class).send("donations", embed);
+        } catch (QuickException e) {
+            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send incentive webhook.");
+        }
+    }
+
+    private static void sendLootDropWebhook(int drops) {
+        Embed embed = new Embed();
+        embed.title("Loot Drop Triggered");
+        embed.description("A donation has triggered " + drops + " cumulative loot drop(s).");
+        embed.color(TextColor.color(0x63D92A).value());
+        try {
+            DataManager.getConfigManager("webhooks", WebhookManager.class).send("donations", embed);
+        } catch (QuickException e) {
+            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send loot drop webhook.");
+        }
+    }
+
+    private static void sendDonationWebhook(JSONObject donation) {
+
+        Embed embed = new Embed();
+        embed.title("Donation Received");
+        embed.description("A donation of $" + donation.getDouble("amount") + " was received.");
+        embed.color(TextColor.color(0x31D9D9).value());
+        embed.url(donation.getJSONObject("links").getString("recipient"));
+        embed.image(donation.getString("recipientImageURL"));
+
+        if(donation.has("message") && donation.get("message") instanceof String){
+            embed.addField("Message", donation.getString("message"), false);
+        }
+        embed.addField("Recipient", donation.getString("recipientName"), false);
+
+        try {
+            DataManager.getConfigManager("webhooks", WebhookManager.class).send("donations", embed);
         } catch (QuickException e) {
             CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send donation webhook.");
         }
@@ -253,7 +274,27 @@ public class DonorDriveApi {
 
     public static void rollBoogies() {
         DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(queuedBoogies, true);
+
+
+        Embed embed = new Embed();
+        embed.title("Boogie Time!");
+        embed.description(queuedBoogies + " Boogies have been rolled!");
+        embed.color(TextColor.color(0xD97E1C).value());
+        try {
+            DataManager.getConfigManager("webhooks", WebhookManager.class).send("donations", embed);
+        } catch (QuickException e) {
+            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send boogie webhook.");
+        }
+
         queuedBoogies = 0;
+    }
+
+    public static void queueBoogie(){
+        queueBoogies(1);
+    }
+
+    public static void queueBoogies(int amount){
+        queuedBoogies = queuedBoogies + amount;
     }
 
     public enum IncentiveType {
