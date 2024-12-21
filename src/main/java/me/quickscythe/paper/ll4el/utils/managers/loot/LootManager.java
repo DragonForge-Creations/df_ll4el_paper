@@ -48,6 +48,8 @@ public class LootManager extends ConfigManager {
     }
 
     public LootTable dropLoot(String locationName, LootType type) {
+        CoreUtils.logger().log("LootManager", "Dropped " + type.name().toLowerCase() + " loot at " + locationName);
+
         Location drop = CoreUtils.decryptLocation(config().getData().getString(locationName));
         if (!drop.isChunkLoaded()) {
             drop.getChunk().load();
@@ -60,7 +62,6 @@ public class LootManager extends ConfigManager {
             ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
             Inventory inv = box.getInventory();
             table.loadInventory(inv);
-            CoreUtils.logger().log("LootManager", "Dropped " + table_name + " loot at " + locationName);
             return table;
         }
         int r = 25;
@@ -72,7 +73,6 @@ public class LootManager extends ConfigManager {
                     if (loc.getBlock().getState() instanceof Container container) {
                         if (container instanceof ShulkerBox) continue;
                         tables_map.get("common").loadInventory(container.getInventory());
-                        CoreUtils.logger().log("LootManager", "Dropped common loot at " + locationName);
                     }
                 }
             }
