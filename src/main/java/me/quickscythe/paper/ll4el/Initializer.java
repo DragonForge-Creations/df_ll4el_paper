@@ -4,7 +4,6 @@ import me.quickscythe.dragonforge.commands.CommandManager;
 import me.quickscythe.paper.ll4el.commands.*;
 import me.quickscythe.paper.ll4el.listeners.ChatListener;
 import me.quickscythe.paper.ll4el.listeners.PlayerListener;
-import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +16,7 @@ public final class Initializer extends JavaPlugin {
 
         new ChatListener(this);
         new PlayerListener(this);
+
 
         new CommandManager.CommandBuilder(new PartyCommand(this)).setDescription("Last Life party command.").setAliases("p").register();
         new CommandManager.CommandBuilder(new SettingsCommand(this)).setDescription("Last Life settings command.").setAliases("set").register();

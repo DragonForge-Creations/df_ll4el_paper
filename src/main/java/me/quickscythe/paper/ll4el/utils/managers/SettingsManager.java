@@ -21,39 +21,41 @@ public class SettingsManager {
         private final JSONObject settings;
 
         public Settings(JSONObject settings) {
-            this.settings = settings;
+
+            if (settings.isEmpty()) this.settings = defaultSettings();
+            else this.settings = settings;
         }
 
         public static JSONObject defaultSettings() {
             JSONObject def = new JSONObject();
-            def.put("particles", true);
-            def.put("icon", true);
-            def.put("chat", true);
+            def.put("boogie", "both");
+            def.put("life", "both");
+            def.put("donation", "toast");
             return def;
         }
 
-        public boolean particles() {
-            return settings.getBoolean("particles");
+        public String boogie() {
+            return settings.getString("boogie");
         }
 
-        public void particles(boolean particles) {
-            settings.put("particles", particles);
+        public void boogie(String boogie) {
+            settings.put("boogie", boogie);
         }
 
-        public boolean icon() {
-            return settings.getBoolean("icon");
+        public String life() {
+            return settings.getString("life");
         }
 
-        public void icon(boolean b) {
-            settings.put("icon", b);
+        public void life(String life) {
+            settings.put("life", life);
         }
 
-        public boolean chat() {
-            return settings.getBoolean("chat");
+        public String donation() {
+            return settings.getString("donation");
         }
 
-        public void chat(boolean b) {
-            settings.put("chat", b);
+        public void donation(String donation) {
+            settings.put("donation", donation);
         }
 
         public JSONObject json() {

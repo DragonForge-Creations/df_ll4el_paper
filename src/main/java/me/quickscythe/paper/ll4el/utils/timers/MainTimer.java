@@ -1,7 +1,7 @@
 package me.quickscythe.paper.ll4el.utils.timers;
 
 import me.quickscythe.dragonforge.utils.storage.DataManager;
-import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
+import me.quickscythe.paper.ll4el.utils.donations.DonorDriveApi;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
@@ -44,9 +44,10 @@ public class MainTimer implements Runnable {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (playerManager.isBoogie(player)) {
-                if (SettingsManager.getSettings(player).particles())
+                SettingsManager.Settings settings = SettingsManager.getSettings(player);
+                if (settings.boogie().equalsIgnoreCase("both") || settings.boogie().equalsIgnoreCase("particle"))
                     player.spawnParticle(Particle.DUST, player.getLocation(), 1, dustoptions);
-                if (SettingsManager.getSettings(player).icon())
+                if (settings.boogie().equalsIgnoreCase("both") || settings.boogie().equalsIgnoreCase("icon"))
                     player.sendActionBar(text("                                                                                          \ue001"));
                 if (playerManager.getLives(player) < 1) playerManager.removeBoogie(player);
             }

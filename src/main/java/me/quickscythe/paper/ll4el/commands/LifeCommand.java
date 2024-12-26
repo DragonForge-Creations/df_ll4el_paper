@@ -21,6 +21,8 @@ public class LifeCommand extends CommandExecutor {
         super(plugin, "life");
     }
 
+    // Usage: /life <set|add|remove> <player> [amount=1]
+
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"))).then(argument("operator", StringArgumentType.string()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.usage.life"))).suggests((context, builder) -> {

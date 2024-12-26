@@ -1,15 +1,28 @@
 package me.quickscythe.paper.ll4el.utils.managers;
 
+import io.papermc.paper.advancement.AdvancementDisplay;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.utils.CoreUtils;
+import me.quickscythe.dragonforge.utils.advancements.EphemeralAdvancement;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.storage.ConfigManager;
+import me.quickscythe.paper.ll4el.utils.Utils;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+
+import static net.kyori.adventure.text.Component.text;
 
 public class PlayerManager extends ConfigManager {
 
@@ -70,6 +83,7 @@ public class PlayerManager extends ConfigManager {
         if (player.isOnline())
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.cured"));
         setPlayerData(player, pd);
+
     }
 
 
@@ -93,17 +107,44 @@ public class PlayerManager extends ConfigManager {
         setScoreboardInfo(player);
     }
 
-    public void editLife(OfflinePlayer player, int i) {
-        editLife(player, i, true);
-    }
 
-    public void editLife(OfflinePlayer player, int i, boolean animation) {
-        int l = getLives(player) + i;
-        setLife(player, l);
-        if (i > 0 && player.isOnline()) {
+    public void editLife(OfflinePlayer offlinePlayer, int i) {
+        int l = getLives(offlinePlayer) + i;
+        setLife(offlinePlayer, l);
+        if (i > 0 && offlinePlayer.isOnline()) {
+            Player bukkitPlayer = offlinePlayer.getPlayer();
+            assert bukkitPlayer != null;
+            SettingsManager.Settings settings = SettingsManager.getSettings(bukkitPlayer);
             int cmd = 1000 + i;
-            if (animation) CoreUtils.playTotemAnimation(player.getPlayer(), cmd);
-            Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.lives.more", i + ""));
+            ItemStack heart = new ItemStack(Material.TOTEM_OF_UNDYING);
+            ItemMeta meta = heart.getItemMeta();
+            if (meta != null) {
+                meta.setCustomModelData(cmd);
+                heart.setItemMeta(meta);
+            }
+
+            if (settings.life().equalsIgnoreCase("both") || settings.life().equalsIgnoreCase("toast")) {
+                EphemeralAdvancement.Builder builder = new EphemeralAdvancement.Builder(Utils.plugin());
+                builder.title(text("You've been given " + i + " lives!", NamedTextColor.GREEN))
+                        .description("Someone's looking out for you!")
+                        .icon(heart)
+                        .frame(AdvancementDisplay.Frame.GOAL)
+                        .toast(true)
+                        .chat(false)
+                        .hidden(false);
+                EphemeralAdvancement advancement = builder.build();
+                advancement.send(bukkitPlayer);
+            }
+            if (settings.life().equalsIgnoreCase("both") || settings.life().equalsIgnoreCase("totem")) {
+
+                ItemStack hand = bukkitPlayer.getInventory().getItemInMainHand();
+                bukkitPlayer.getInventory().setItemInMainHand(heart);
+                ServerPlayer nmsPlayer = ((CraftPlayer) bukkitPlayer).getHandle();
+                ClientboundEntityEventPacket packet = new ClientboundEntityEventPacket(nmsPlayer, (byte) 35);
+                nmsPlayer.connection.send(packet);
+                bukkitPlayer.getInventory().setItemInMainHand(hand);
+            }
+            bukkitPlayer.sendMessage(MessageUtils.getMessage("message.lives.more", i + ""));
         }
     }
 
@@ -154,7 +195,7 @@ public class PlayerManager extends ConfigManager {
         if (player.isOnline()) {
             Objects.requireNonNull(player.getPlayer()).playSound(Objects.requireNonNull(player.getLocation()), Sound.ENTITY_WITHER_DEATH, SoundCategory.PLAYERS, 10F, 1F);
         }
-        if (SettingsManager.getSettings(player).chat() && player.isOnline())
+        if (player.isOnline())
             Objects.requireNonNull(player.getPlayer()).sendMessage(MessageUtils.getMessage("message.boogie.chat"));
 
     }

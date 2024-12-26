@@ -9,7 +9,7 @@ import me.quickscythe.dragonforge.commands.CommandExecutor;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
-import me.quickscythe.paper.ll4el.utils.DonorDriveApi;
+import me.quickscythe.paper.ll4el.utils.donations.DonorDriveApi;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
