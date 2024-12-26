@@ -30,7 +30,7 @@ public class SettingsManager {
             JSONObject def = new JSONObject();
             def.put("boogie", "both");
             def.put("life", "both");
-            def.put("donation", "toast");
+            def.put("donation", "both");
             return def;
         }
 
