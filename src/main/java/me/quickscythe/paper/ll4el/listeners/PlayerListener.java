@@ -1,6 +1,5 @@
 package me.quickscythe.paper.ll4el.listeners;
 
-import json2.JSONArray;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.exceptions.QuickException;
 import me.quickscythe.dragonforge.utils.CoreUtils;
@@ -10,6 +9,8 @@ import me.quickscythe.dragonforge.utils.network.discord.WebhookManager;
 import me.quickscythe.dragonforge.utils.network.discord.embed.Embed;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
+import me.quickscythe.paper.ll4el.utils.donations.Donation;
+import me.quickscythe.paper.ll4el.utils.donations.DonorDriveApi;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import net.kyori.adventure.text.Component;
@@ -38,7 +39,28 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         if (e.getAction().isLeftClick()) {
+            JSONObject data = new JSONObject();
+            data.put("eventID", 554);
+            data.put("amount", 10);
+            data.put("displayName", "Tyler Olexa");
+            data.put("avatarImageURL", "https://donordrivecontent.com/clients/extralife/img/avatar-constituent-default.gif");
+            data.put("isRegFee", false);
+            data.put("donationID", "5FD34169C6B9ACFA");
+            data.put("incentiveID", "96E52B46-FBB0-6EF6-56EA6C7E1BDC6B00");
+            data.put("message", "This was donated by the winner of the Olexamas Art competition Jepski! They offered the donation from the cash prize for winning, which was extremely kind <3");
+            data.put("participantID", 548110);
+            data.put("recipientImageURL", "https://donordrivecontent.com/extralife/images/$avatars$/constituent_6AD3944D-941B-205A-6D97DA944FDE4EAE.jpg");
+            data.put("createdDateUTC", "2024-11-29T16:17:52.77+0000");
+            data.put("teamID", 68860);
+            data.put("recipientName", "Olexamas 2024");
+            data.put("donorID", "D828B0CA974D38C6");
+            JSONObject links = new JSONObject();
+            links.put("recipient", "https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=547496");
+            links.put("donate", "https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=547496#donate");
+            data.put("links", links);
 
+            Donation donation = new Donation(data);
+            DonorDriveApi.queueDonation(donation);
             LootManager lootManager = DataManager.getConfigManager("loot", LootManager.class);
             if (lootManager.isEditing(e.getPlayer())) {
                 lootManager.createDrop(lootManager.getEditingLocation(e.getPlayer()), Objects.requireNonNull(e.getClickedBlock()).getLocation());

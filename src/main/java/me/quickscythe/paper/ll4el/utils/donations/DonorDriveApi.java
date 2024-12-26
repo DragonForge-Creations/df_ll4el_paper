@@ -12,8 +12,8 @@ import me.quickscythe.dragonforge.utils.network.discord.WebhookManager;
 import me.quickscythe.dragonforge.utils.network.discord.embed.Embed;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.Utils;
+import me.quickscythe.paper.ll4el.utils.donations.event.DonationEvent;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
-import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 
@@ -54,8 +54,6 @@ public class DonorDriveApi {
         boolean save = false;
         for (int i = 0; i < donations.length(); i++) {
             JSONObject donation = donations.getJSONObject(i);
-
-
             if (!processed.toString().contains(donation.toString())) {
                 donationListener.donationReceived(new DonationEvent(new Donation(donation)));
                 save = true;
@@ -193,6 +191,10 @@ public class DonorDriveApi {
             }
         }
         return offlinePlayer;
+    }
+
+    public static void queueDonation(Donation donation) {
+        donationListener.donationReceived(new DonationEvent(donation));
     }
 
     public enum IncentiveType {

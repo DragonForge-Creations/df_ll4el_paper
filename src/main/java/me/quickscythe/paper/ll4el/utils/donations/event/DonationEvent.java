@@ -1,5 +1,6 @@
-package me.quickscythe.paper.ll4el.utils.donations;
+package me.quickscythe.paper.ll4el.utils.donations.event;
 
+import me.quickscythe.paper.ll4el.utils.donations.Donation;
 import org.bukkit.OfflinePlayer;
 
 public record DonationEvent(Donation donation) {

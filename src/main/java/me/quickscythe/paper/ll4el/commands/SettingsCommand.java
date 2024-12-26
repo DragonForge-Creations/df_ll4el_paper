@@ -25,7 +25,6 @@ public class SettingsCommand extends CommandExecutor {
         return literal(getName()).executes(context->showUsage(context, ""))
                 .then(argument("setting", StringArgumentType.word())
                         .executes(context->{
-                            //todo toggle setting between all options (test, this was ai generated)
                             CommandSender sender = context.getSource().getSender();
                             String setting = context.getArgument("setting", String.class);
                             if(!(sender instanceof Player player))
@@ -60,7 +59,6 @@ public class SettingsCommand extends CommandExecutor {
                         })
                         .then(argument("option", StringArgumentType.string())
                                 .executes(context->{
-                                    //todo handle setting option. Make sure both setting and option are valid
                                     CommandSender sender = context.getSource().getSender();
                                     String setting = context.getArgument("setting", String.class);
                                     String option = context.getArgument("option", String.class);

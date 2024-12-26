@@ -12,6 +12,7 @@ import me.quickscythe.dragonforge.utils.network.discord.WebhookManager;
 import me.quickscythe.dragonforge.utils.network.discord.embed.Embed;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.Utils;
+import me.quickscythe.paper.ll4el.utils.donations.event.DonationEvent;
 import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import me.quickscythe.paper.ll4el.utils.managers.SettingsManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
@@ -21,6 +22,8 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -51,7 +54,6 @@ public class DonationListener {
             sendLootDropWebhook(newDrops);
         }
 
-        //todo change to ``
         if (e.player() != null) {
             OfflinePlayer offlinePlayer = e.player();
             if (offlinePlayer == null) {
@@ -72,7 +74,7 @@ public class DonationListener {
             if (!e.donation().incentiveId().isEmpty()) {
                 CoreUtils.logger().log("DonationProcessor", "Donation has incentive ID");
                 JSONObject incentiveData = DonorDriveApi.getIncentiveData(e.donation().participantId(), e.donation().incentiveId());
-                if (!incentiveData.getString("description").contains("ID:7718")) return;
+                if (!incentiveData.getString("description").contains("ID:7781")) return;
                 //If incentiveData doesn't contain a specific incentive ID, we'll stop processing here.
 
                 DonorDriveApi.IncentiveType type = DonorDriveApi.IncentiveType.fromDescription(incentiveData.getString("description"));
@@ -102,8 +104,13 @@ public class DonationListener {
         double amount = donation.amount();
         String message = donation.message();
         EphemeralAdvancement.Builder builder = new EphemeralAdvancement.Builder(CoreUtils.plugin());
-        builder.icon(Material.CHEST);
-        builder.frame(AdvancementDisplay.Frame.CHALLENGE);
+//        builder.icon(Material.CHEST);
+        ItemStack gift = new ItemStack(Material.STICK);
+        ItemMeta meta = gift.getItemMeta();
+        meta.setCustomModelData(107);
+        gift.setItemMeta(meta);
+        builder.icon(gift);
+        builder.frame(AdvancementDisplay.Frame.GOAL);
         builder.title("A donation of $" + amount + " was received from '" + displayName + "'.");
         builder.description(message);
         EphemeralAdvancement adv = builder.build();
