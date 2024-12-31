@@ -6,6 +6,7 @@ import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.utils.timers.BoogieTimer;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,11 +37,17 @@ public class BoogieManager extends ConfigManager {
         int check = 0;
         while (selected < amount && check < 2) {
             check = check + 1;
-            Player pot = (Player) ((List<?>) Bukkit.getOnlinePlayers()).get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
-            JSONObject potd = ((PlayerManager) DataManager.getConfigManager("players")).getPlayerData(pot);
+            PlayerManager playerManager = (PlayerManager) DataManager.getConfigManager("players");
+            UUID randomUUID = playerManager.getPlayers().get(new Random().nextInt(playerManager.getPlayers().size()));
+            while(playerManager.getLives(Bukkit.getOfflinePlayer(randomUUID)) < 1) {
+                randomUUID = playerManager.getPlayers().get(new Random().nextInt(playerManager.getPlayers().size()));
+            }
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(randomUUID);
+            JSONObject potd = playerManager.getPlayerData(offlinePlayer);
+            CoreUtils.logger().log("BoogieManager", "Selected " + offlinePlayer.getName() + " as a boogieman");
             if (!potd.getBoolean("boogie") && new Date().getTime() - potd.getLong("last_selected") > 10000) {
                 selected = selected + 1;
-                ((PlayerManager) DataManager.getConfigManager("players")).setBoogie(pot);
+                ((PlayerManager) DataManager.getConfigManager("players")).setBoogie(offlinePlayer);
             }
         }
     }

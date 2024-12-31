@@ -3,7 +3,6 @@ package me.quickscythe.paper.ll4el.utils;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
-import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.donations.DonorDriveApi;
@@ -15,6 +14,7 @@ import me.quickscythe.paper.ll4el.utils.managers.party.PartyManager;
 import me.quickscythe.paper.ll4el.utils.timers.MainTimer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 
 import static net.kyori.adventure.text.Component.text;
@@ -68,11 +68,7 @@ public class Utils {
         MessageUtils.addMessage("cmd.boogie.roll", "{\"text\":\"Now rolling for [0] boogie(s).\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.boogie.remove.all", "{\"text\":\"All boogies have been removed.\",\"color\":\"green\"}");
         MessageUtils.addMessage("cmd.party.create", "{\"text\":\"Successfully created [0] party.\",\"color\":\"green\"}");
-        Component settingsSet = text("").append(text("Successfully set ", NamedTextColor.GREEN))
-                .append(text("[0]", NamedTextColor.GRAY))
-                .append(text(" to ", NamedTextColor.GREEN))
-                .append(text("[1]", NamedTextColor.GRAY))
-                .append(text(".", NamedTextColor.GREEN));
+        Component settingsSet = text("").append(text("Successfully set ", NamedTextColor.GREEN)).append(text("[0]", NamedTextColor.GRAY)).append(text(" to ", NamedTextColor.GREEN)).append(text("[1]", NamedTextColor.GRAY)).append(text(".", NamedTextColor.GREEN));
         MessageUtils.addMessage("cmd.settings.set", settingsSet);
 //        MessageUtils.addMessage("cmd.settings.set", "{\"text\":\"Successfully set [0] to [1].\",\"color\":\"green\"}");
         MessageUtils.addMessage("party.join.success", "{\"text\":\"You have joined the [0] party.\",\"color\":\"green\"}");
@@ -83,7 +79,11 @@ public class Utils {
         MessageUtils.addMessage("error.party.no_party", "{\"text\":\"[0] doesn't seem to exist. Check your spelling and try again.\",\"color\":\"red\"}");
         MessageUtils.addMessage("cmd.loot.create", "{\"text\":\"Punch a block to set loot drop location.\",\"color\":\"gray\"}");
         MessageUtils.addMessage("loot.create", "{\"text\":\"Successfully created loot drop for [0].\",\"color\":\"green\"}");
-
+        MessageUtils.addMessage("message.task.complete", text()
+                .append(text("Congratulations on completing this week's task! Your reward is ", TextColor.color(0x14CBDB))
+                        .append(text("[0]", TextColor.color(0xD95E00))
+                                .append(text(".", TextColor.color(0x14CBDB))))).build());
+        MessageUtils.addMessage("cmd.weeklytask.usage", text("Usage: /task <advancement> <reward>", TextColor.color(0xDB4630)));
     }
 
     public static Initializer plugin() {

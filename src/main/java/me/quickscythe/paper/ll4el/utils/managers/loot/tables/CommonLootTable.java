@@ -26,7 +26,7 @@ public class CommonLootTable extends LootTable {
     @Override
     public void loadInventory(Inventory inv) {
         //Randomly shuffle the contents into inv
-        inv.clear();
+//        inv.clear();
         for (ItemStack master : contents) {
             ItemStack item = master.clone();
             item.setAmount((int) (Math.random() * master.getAmount()) + 1);
