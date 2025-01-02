@@ -85,7 +85,9 @@ public class DonationListener {
                         break;
                     case LIFE:
                         PlayerManager playerManager = DataManager.getConfigManager("players", PlayerManager.class);
-                        playerManager.addLife(offlinePlayer);
+                        if (playerManager.getLives(offlinePlayer) <= 2) {
+                            playerManager.addLife(offlinePlayer);
+                        }
                         sendIncentiveWebhook(type, offlinePlayer);
                         break;
                     case LOOT:
