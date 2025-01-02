@@ -42,6 +42,7 @@ public class DonationCommand extends CommandExecutor {
                                 data.put("message", "Test message");
                                 data.put("activityPledgeUnitAmount", 10.00);
                                 data.put("activityPledgeMaxAmount", 1000.00);
+                                data.put("incentiveID", "67630A91-AD4A-2AF2-1C5D516A0B89CFE5");
                                 data.put("links", new JSONObject()
                                         .put("recipient", "https://testdrive.donordrive.com/index.cfm?fuseaction=donorDrive.participant&participantID=4024")
                                         .put("donate", "https://testdrive.donordrive.com/index.cfm?fuseaction=donorDrive.donate&participantID=4024"));

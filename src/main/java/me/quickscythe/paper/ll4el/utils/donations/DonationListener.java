@@ -88,15 +88,14 @@ public class DonationListener {
                         if (playerManager.getLives(offlinePlayer) <= 2) {
                             playerManager.addLife(offlinePlayer);
                         }
-                        sendIncentiveWebhook(type, offlinePlayer);
                         break;
                     case LOOT:
                         DataManager.getConfigManager("loot", LootManager.class).randomDrop(LootType.SHULKER);
-                        sendIncentiveWebhook(type, null);
                         break;
                     case OTHER:
                         break;
                 }
+                sendIncentiveWebhook(type, offlinePlayer);
             }
         }
     }

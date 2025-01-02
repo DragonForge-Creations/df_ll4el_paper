@@ -25,7 +25,7 @@ public final class Initializer extends JavaPlugin {
         new CommandManager.CommandBuilder(new LootCommand(this)).setDescription("Last Life loot command.").register();
         new CommandManager.CommandBuilder(new LinkCommand(this)).setDescription("Last Life link command. Link to DonorDrive.").register();
         new CommandManager.CommandBuilder(new TaskCommand(this)).setDescription("Dragonfell weekly task command.").setAliases("task", "tasks", "wtask", "wtasks").register();
-        new CommandManager.CommandBuilder(new DonationCommand(this)).setDescription("Donation test command.").register();
+//        new CommandManager.CommandBuilder(new DonationCommand(this)).setDescription("Donation test command.").register();
 
 
     }
