@@ -3,6 +3,7 @@ package me.quickscythe.paper.ll4el;
 import me.quickscythe.dragonforge.commands.CommandManager;
 import me.quickscythe.paper.ll4el.commands.*;
 import me.quickscythe.paper.ll4el.listeners.ChatListener;
+import me.quickscythe.paper.ll4el.listeners.EntityListener;
 import me.quickscythe.paper.ll4el.listeners.PlayerListener;
 import me.quickscythe.paper.ll4el.utils.Utils;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +17,7 @@ public final class Initializer extends JavaPlugin {
 
         new ChatListener(this);
         new PlayerListener(this);
+        new EntityListener(this);
 
 
         new CommandManager.CommandBuilder(new PartyCommand(this)).setDescription("Last Life party command.").setAliases("p").register();
@@ -26,7 +28,6 @@ public final class Initializer extends JavaPlugin {
         new CommandManager.CommandBuilder(new LinkCommand(this)).setDescription("Last Life link command. Link to DonorDrive.").register();
         new CommandManager.CommandBuilder(new TaskCommand(this)).setDescription("Dragonfell weekly task command.").setAliases("task", "tasks", "wtask", "wtasks").register();
 //        new CommandManager.CommandBuilder(new DonationCommand(this)).setDescription("Donation test command.").register();
-
 
     }
 

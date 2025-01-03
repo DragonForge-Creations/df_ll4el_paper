@@ -74,8 +74,14 @@ public class DonationListener {
             if (!e.donation().incentiveId().isEmpty()) {
                 CoreUtils.logger().log("DonationProcessor", "Donation has incentive ID");
                 JSONObject incentiveData = DonorDriveApi.getIncentiveData(e.donation().participantId(), e.donation().incentiveId());
-                if (!incentiveData.getString("description").contains("ID:7781")) return;
+                if (!incentiveData.getString("description").contains("ID:7781") && !incentiveData.getString("description").contains("ID: 7781"))
+                    return;
                 //If incentiveData doesn't contain a specific incentive ID, we'll stop processing here.
+                if (incentiveData.getString("description").contains("ID: 7781")) {
+                    String description = incentiveData.getString("description");
+                    description = description.replace("ID: 7781", "ID:7781");
+                    incentiveData.put("description", description);
+                }
 
                 DonorDriveApi.IncentiveType type = DonorDriveApi.IncentiveType.fromDescription(incentiveData.getString("description"));
                 CoreUtils.logger().log("DonationProcessor", "Incentive type: " + type);
@@ -92,11 +98,26 @@ public class DonationListener {
                     case LOOT:
                         DataManager.getConfigManager("loot", LootManager.class).randomDrop(LootType.SHULKER);
                         break;
+                    case ADMIN_LOOT:
+                        sendAdminLootWebhook();
+                        break;
                     case OTHER:
                         break;
                 }
                 sendIncentiveWebhook(type, offlinePlayer);
             }
+        }
+    }
+
+    private void sendAdminLootWebhook() {
+        Embed embed = new Embed();
+        embed.title("Secret Time!");
+        embed.description("A donation has triggered Admin Loot Location incentive. It's time to reveal one of the Well's locations'!");
+        embed.color(TextColor.color(0xD9CB11).value());
+        try {
+            DataManager.getConfigManager("webhooks", WebhookManager.class).send("donations", embed);
+        } catch (QuickException e) {
+            CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send incentive webhook.");
         }
     }
 

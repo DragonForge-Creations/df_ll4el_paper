@@ -16,6 +16,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -34,10 +40,25 @@ public class Utils {
 
         registerPlaceholders();
         registerMessages();
+        registerRecipes();
 
-        CoreUtils.packServer().setUrl("https://ci.vanillaflux.com/view/DragonForge%20Creations/job/df_ll4el_resources/lastSuccessfulBuild/artifact/resources.zip");
+//        CoreUtils.packServer().setUrl("https://ci.vanillaflux.com/view/DragonForge%20Creations/job/df_ll4el_resources/lastSuccessfulBuild/artifact/resources.zip");
+
+//        CoreUtils.packServer().setUrl("https://github.com/DragonForge-Creations/df_ll4el_resources");
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
+    }
+
+    private static void registerRecipes() {
+        NamespacedKey bundleKey = new NamespacedKey(plugin, "bundle");
+        ItemStack bundle = new ItemStack(Material.BUNDLE);
+
+        ShapedRecipe bundleRecipe = new ShapedRecipe(bundleKey, bundle);
+        bundleRecipe.shape(" A ", " B ", "   ");
+        bundleRecipe.setIngredient('A', Material.STRING);
+        bundleRecipe.setIngredient('B', Material.LEATHER);
+
+        plugin.getServer().addRecipe(bundleRecipe);
     }
 
     private static void registerPlaceholders() {

@@ -199,7 +199,7 @@ public class DonorDriveApi {
 
     public enum IncentiveType {
 
-        BOOGIE("ID:77813"), LIFE("ID:77814"), LOOT("ID:77815"), OTHER("*");
+        BOOGIE("ID:77813"), LIFE("ID:77814"), LOOT("ID:77815"), ADMIN_LOOT("ID:77816"), OTHER("*");
 
         final String id;
 
