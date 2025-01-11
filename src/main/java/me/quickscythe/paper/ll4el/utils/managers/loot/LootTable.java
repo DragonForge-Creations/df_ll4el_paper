@@ -11,6 +11,7 @@ import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MusicInstrumentMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -68,7 +69,7 @@ public abstract class LootTable {
                         for (String key : levels.keySet()) {
                             Enchantment enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(key));
                             assert enchantment != null;
-                            meta.addEnchant(enchantment, levels.getInt(key), true);
+                            ((EnchantmentStorageMeta) meta).addStoredEnchant(enchantment, levels.getInt(key), true);
                         }
                         break;
                     case "sound_data":
