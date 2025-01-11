@@ -85,7 +85,8 @@ public class PlayerManager extends ConfigManager {
     }
 
     public void removeLife(OfflinePlayer player) {
-        editLife(player, -1);
+        setLife(player, getLives(player) - 1);
+//        editLife(player, -1);
     }
 
 
@@ -105,7 +106,7 @@ public class PlayerManager extends ConfigManager {
         if (!queuedLives.containsKey(offlinePlayer.getUniqueId())) {
             Bukkit.getScheduler().runTaskLater(CoreUtils.plugin(), () -> {
 
-                int l = queuedLives.getOrDefault(offlinePlayer.getUniqueId(), 0);
+                int l = getLives(offlinePlayer) + queuedLives.getOrDefault(offlinePlayer.getUniqueId(), 0);
                 setLife(offlinePlayer, l);
                 queuedLives.remove(offlinePlayer.getUniqueId());
                 if (l > 0 && offlinePlayer.isOnline()) {
