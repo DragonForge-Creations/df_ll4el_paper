@@ -265,7 +265,7 @@ public enum EntitySkullData {
                  MAGMA_CUBE, PHANTOM, PILLAGER, RAVAGER, SHULKER, SILVERFISH, SKELETON_HORSE, SLIME, SPIDER, STRAY, VEX,
                  VINDICATOR, WITCH, WITHER, ZOMBIE_HORSE, ZOMBIFIED_PIGLIN, ZOGLIN, ALLAY, HOGLIN, PIGLIN_BRUTE, BOGGED,
                  BREEZE, CAMEL, ARMADILLO, ENDERMAN, GLOW_SQUID, IRON_GOLEM, SNIFFER, SNOW_GOLEM, TADPOLE, TURTLE,
-                 WARDEN -> {
+                 WARDEN, PLAYER -> {
                 return valueOf(entity.getType().name());
             }
             case EntityType.STRIDER -> {

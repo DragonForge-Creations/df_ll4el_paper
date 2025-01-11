@@ -37,6 +37,11 @@ public class PartyManager extends ConfigManager {
         return new Party(name, data);
     }
 
+    public Party getParty(String name) {
+        JSONObject data = config().getData().getJSONObject(name);
+        if (data == null) return null;
+        return new Party(name, data);
+    }
 
     public boolean inPartyChat(OfflinePlayer player) {
         return in_chat.contains(player.getUniqueId());

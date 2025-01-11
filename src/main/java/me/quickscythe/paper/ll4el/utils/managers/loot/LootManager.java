@@ -58,6 +58,9 @@ public class LootManager extends ConfigManager {
             String table_name = getRandomTableName();
             while (table_name.equalsIgnoreCase("common")) table_name = getRandomTableName();
             ShulkerLootTable table = (ShulkerLootTable) tables_map.get(table_name);
+            while(drop.getBlock().getType() != Material.AIR) {
+                drop = drop.add(0, -1, 0);
+            }
             drop.getBlock().setType(Material.valueOf(table.getColor().name() + "_SHULKER_BOX"));
             ShulkerBox box = (ShulkerBox) drop.getBlock().getState();
             Inventory inv = box.getInventory();

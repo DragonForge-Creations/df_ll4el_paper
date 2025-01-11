@@ -37,15 +37,9 @@ public class BoogieCommand extends CommandExecutor {
         return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.boogie.usage"))).then(argument("action", StringArgumentType.string()).executes(context -> {
             CommandSender sender = context.getSource().getSender();
             String action = StringArgumentType.getString(context, "action");
-            if (action.equalsIgnoreCase("start")) {
-                if (sender.hasPermission("lastlife.boogie.start")) {
-                    DataManager.getConfigManager("boogies", BoogieManager.class).startSession();
-                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.start"), sender);
-                }
-            }
             if (action.equalsIgnoreCase("stop")) {
                 if (sender.hasPermission("lastlife.boogie.stop")) {
-                    DataManager.getConfigManager("boogies", BoogieManager.class).stopSession();
+                    DataManager.getConfigManager("boogies", BoogieManager.class).stop();
                     CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.stop"), sender);
                 }
             }

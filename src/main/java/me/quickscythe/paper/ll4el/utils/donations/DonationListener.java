@@ -1,10 +1,8 @@
 package me.quickscythe.paper.ll4el.utils.donations;
 
-import io.papermc.paper.advancement.AdvancementDisplay;
 import json2.JSONObject;
 import me.quickscythe.dragonforge.exceptions.QuickException;
 import me.quickscythe.dragonforge.utils.CoreUtils;
-import me.quickscythe.dragonforge.utils.advancements.EphemeralAdvancement;
 import me.quickscythe.dragonforge.utils.chat.Logger;
 import me.quickscythe.dragonforge.utils.config.ConfigFile;
 import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
@@ -19,11 +17,8 @@ import me.quickscythe.paper.ll4el.utils.managers.loot.LootManager;
 import me.quickscythe.paper.ll4el.utils.managers.loot.LootType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -74,13 +69,15 @@ public class DonationListener {
             if (!e.donation().incentiveId().isEmpty()) {
                 CoreUtils.logger().log("DonationProcessor", "Donation has incentive ID");
                 JSONObject incentiveData = DonorDriveApi.getIncentiveData(e.donation().participantId(), e.donation().incentiveId());
-                if (!incentiveData.getString("description").contains("ID:7781") && !incentiveData.getString("description").contains("ID: 7781"))
-                    return;
-                //If incentiveData doesn't contain a specific incentive ID, we'll stop processing here.
-                if (incentiveData.getString("description").contains("ID: 7781")) {
-                    String description = incentiveData.getString("description");
-                    description = description.replace("ID: 7781", "ID:7781");
-                    incentiveData.put("description", description);
+                if (incentiveData.has("description")) {
+                    if (!incentiveData.getString("description").contains("ID:7781") && !incentiveData.getString("description").contains("ID: 7781"))
+                        return;
+                    //If incentiveData doesn't contain a specific incentive ID, we'll stop processing here.
+                    if (incentiveData.getString("description").contains("ID: 7781")) {
+                        String description = incentiveData.getString("description");
+                        description = description.replace("ID: 7781", "ID:7781");
+                        incentiveData.put("description", description);
+                    }
                 }
 
                 DonorDriveApi.IncentiveType type = DonorDriveApi.IncentiveType.fromDescription(incentiveData.getString("description"));
@@ -97,6 +94,7 @@ public class DonationListener {
                         break;
                     case LOOT:
                         DataManager.getConfigManager("loot", LootManager.class).randomDrop(LootType.SHULKER);
+                        CoreUtils.plugin().getServer().broadcast(text("A donation has triggered a loot drop!", TextColor.color(0xEE3FF)));
                         break;
                     case ADMIN_LOOT:
                         sendAdminLootWebhook();
@@ -122,21 +120,21 @@ public class DonationListener {
     }
 
     private void sendDonationToast(Player player, Donation donation) {
-        String displayName = donation.displayName();
-        double amount = donation.amount();
-        String message = donation.message();
-        EphemeralAdvancement.Builder builder = new EphemeralAdvancement.Builder(CoreUtils.plugin());
-//        builder.icon(Material.CHEST);
-        ItemStack gift = new ItemStack(Material.STICK);
-        ItemMeta meta = gift.getItemMeta();
-        meta.setCustomModelData(107);
-        gift.setItemMeta(meta);
-        builder.icon(gift);
-        builder.frame(AdvancementDisplay.Frame.GOAL);
-        builder.title("A donation of $" + amount + " was received from '" + displayName + "'.");
-        builder.description(message);
-        EphemeralAdvancement adv = builder.build();
-        adv.send(player.getPlayer());
+//        String displayName = donation.displayName();
+//        double amount = donation.amount();
+//        String message = donation.message();
+//        EphemeralAdvancement.Builder builder = new EphemeralAdvancement.Builder(CoreUtils.plugin());
+////        builder.icon(Material.CHEST);
+//        ItemStack gift = new ItemStack(Material.STICK);
+//        ItemMeta meta = gift.getItemMeta();
+//        meta.setCustomModelData(107);
+//        gift.setItemMeta(meta);
+//        builder.icon(gift);
+//        builder.frame(AdvancementDisplay.Frame.GOAL);
+//        builder.title("A donation of $" + amount + " was received from '" + displayName + "'.");
+//        builder.description(message);
+//        EphemeralAdvancement adv = builder.build();
+//        adv.send(player.getPlayer());
 
     }
 

@@ -3,6 +3,8 @@ package me.quickscythe.paper.ll4el.utils;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
 import me.quickscythe.dragonforge.utils.chat.placeholder.PlaceholderUtils;
+import me.quickscythe.dragonforge.utils.items.ItemUtils;
+import me.quickscythe.dragonforge.utils.sessions.SessionManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
 import me.quickscythe.paper.ll4el.Initializer;
 import me.quickscythe.paper.ll4el.utils.donations.DonorDriveApi;
@@ -18,10 +20,11 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -31,9 +34,10 @@ public class Utils {
 
     public static void init(Initializer plugin) {
         Utils.plugin = plugin;
+        DataManager.registerConfigManager(new PlayerManager(plugin));
         DataManager.registerConfigManager(new BoogieManager(plugin));
         DataManager.registerConfigManager(new PartyManager(plugin));
-        DataManager.registerConfigManager(new PlayerManager(plugin));
+
         LifeManager.start();
         DataManager.registerConfigManager(new LootManager(plugin));
         DonorDriveApi.start();
@@ -45,6 +49,23 @@ public class Utils {
 //        CoreUtils.packServer().setUrl("https://ci.vanillaflux.com/view/DragonForge%20Creations/job/df_ll4el_resources/lastSuccessfulBuild/artifact/resources.zip");
 
 //        CoreUtils.packServer().setUrl("https://github.com/DragonForge-Creations/df_ll4el_resources");
+
+        SessionManager.session().end(() -> {
+            if (SessionManager.session().task().isPresent() && SessionManager.session().reward().isPresent()) {
+                CoreUtils.logger().log("Utils", "Task complete!");
+                Advancement advancement = SessionManager.session().task().get();
+                ItemStack reward = SessionManager.session().reward().get();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    AdvancementProgress progress = player.getAdvancementProgress(advancement);
+                    if (progress.isDone()) {
+                        player.sendMessage(MessageUtils.getMessage("message.task.complete", MessageUtils.plainText(reward.displayName())));
+                        if (!ItemUtils.inventoryHasRoom(player.getInventory(), reward))
+                            player.getWorld().dropItem(player.getLocation(), reward);
+                        else player.getInventory().addItem(reward);
+                    }
+                }
+            }
+        });
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
     }
@@ -100,10 +121,7 @@ public class Utils {
         MessageUtils.addMessage("error.party.no_party", "{\"text\":\"[0] doesn't seem to exist. Check your spelling and try again.\",\"color\":\"red\"}");
         MessageUtils.addMessage("cmd.loot.create", "{\"text\":\"Punch a block to set loot drop location.\",\"color\":\"gray\"}");
         MessageUtils.addMessage("loot.create", "{\"text\":\"Successfully created loot drop for [0].\",\"color\":\"green\"}");
-        MessageUtils.addMessage("message.task.complete", text()
-                .append(text("Congratulations on completing this week's task! Your reward is ", TextColor.color(0x14CBDB))
-                        .append(text("[0]", TextColor.color(0xD95E00))
-                                .append(text(".", TextColor.color(0x14CBDB))))).build());
+        MessageUtils.addMessage("message.task.complete", text().append(text("Congratulations on completing this week's task! Your reward is ", TextColor.color(0x14CBDB)).append(text("[0]", TextColor.color(0xD95E00)).append(text(".", TextColor.color(0x14CBDB))))).build());
         MessageUtils.addMessage("cmd.weeklytask.usage", text("Usage: /task <advancement> <reward>", TextColor.color(0xDB4630)));
     }
 

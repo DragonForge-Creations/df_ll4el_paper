@@ -7,7 +7,7 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
 import me.quickscythe.dragonforge.utils.chat.MessageUtils;
-import me.quickscythe.paper.ll4el.utils.ItemUtils;
+import me.quickscythe.dragonforge.utils.items.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;

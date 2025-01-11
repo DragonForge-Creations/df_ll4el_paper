@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.UUID;
 
 import static net.kyori.adventure.text.Component.text;
@@ -37,6 +38,7 @@ public class EntityListener implements Listener {
         if(attackingPlayer.getInventory().getItemInMainHand().containsEnchantment(Enchantment.LOOTING)){
             chance += attackingPlayer.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOTING) * 0.05;
         }
+        if(e.getEntity() instanceof Player) chance = 1;
         if (Math.random() < chance) {
             EntitySkullData skullData = EntitySkullData.fromEntity(e.getEntity());
             ItemStack skull;
@@ -46,16 +48,21 @@ public class EntityListener implements Listener {
                 case CREEPER -> skull = new ItemStack(Material.CREEPER_HEAD);
                 case WITHER_SKELETON -> skull = new ItemStack(Material.WITHER_SKELETON_SKULL);
                 case PLAYER -> {
+                    Player player = (Player) e.getEntity();
                     skull = new ItemStack(Material.PLAYER_HEAD);
                     SkullMeta meta = (SkullMeta) skull.getItemMeta();
-                    meta.setOwningPlayer(((Player) e.getEntity()));
+                    meta.setOwningPlayer(player);
+                    String name = player.getName();
+                    meta.displayName(text(name + (name.endsWith("s") ? "'" : "'s") + " Head", NamedTextColor.YELLOW));
+                    meta.lore(Collections.singletonList(text("Killed by " + attackingPlayer.getName(), NamedTextColor.GRAY)));
                     skull.setItemMeta(meta);
                 }
                 default -> skull = getSkull(skullData);
             }
-            if(skull != null){
+            if(skull != null && (!(e.getEntity() instanceof Player))){
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
                 meta.itemName(text((e.getEntity().customName() == null ? skullData.itemName() : MessageUtils.plainText(e.getEntity().customName())) + "'s Head", NamedTextColor.YELLOW));
+                meta.lore(Collections.singletonList(text("Killed by " + attackingPlayer.getName(), NamedTextColor.GRAY)));
                 skull.setItemMeta(meta);
             }
             e.getDrops().add(skull);

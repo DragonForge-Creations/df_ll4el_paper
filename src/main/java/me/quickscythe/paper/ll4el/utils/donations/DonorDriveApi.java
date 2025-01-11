@@ -15,6 +15,7 @@ import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.donations.event.DonationEvent;
 import me.quickscythe.paper.ll4el.utils.managers.BoogieManager;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.io.BufferedReader;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -52,14 +55,21 @@ public class DonorDriveApi {
         JSONArray donations = getTeamDonations();
         JSONArray processed = processedDonations.getData().getJSONArray("donations");
         boolean save = false;
+        List<Donation> donationList = new ArrayList<>();
         for (int i = 0; i < donations.length(); i++) {
             JSONObject donation = donations.getJSONObject(i);
             if (!processed.toString().contains(donation.toString())) {
-                donationListener.donationReceived(new DonationEvent(new Donation(donation)));
+                donationList.add(new Donation(donation));
+//                donationListener.donationReceived(new DonationEvent(new Donation(donation)));
                 save = true;
                 processed.put(donation);
             }
         }
+        Bukkit.getScheduler().runTaskLater(CoreUtils.plugin(), () ->{
+            for (Donation donation : donationList) {
+                donationListener.donationReceived(new DonationEvent(donation));
+            }
+        }, 1);
 
         CoreUtils.logger().log("DonationProcessor", "Processed donations.");
 
