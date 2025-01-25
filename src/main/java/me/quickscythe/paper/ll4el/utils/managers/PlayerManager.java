@@ -52,6 +52,7 @@ public class PlayerManager extends ConfigManager {
 
     public void setPlayerData(OfflinePlayer player, JSONObject json) {
         config().getData().put(String.valueOf(player.getUniqueId()), json);
+        
     }
 
     public String getParty(OfflinePlayer player) {
@@ -106,7 +107,8 @@ public class PlayerManager extends ConfigManager {
         if (!queuedLives.containsKey(offlinePlayer.getUniqueId())) {
             Bukkit.getScheduler().runTaskLater(CoreUtils.plugin(), () -> {
 
-                int l = getLives(offlinePlayer) + queuedLives.getOrDefault(offlinePlayer.getUniqueId(), 0);
+                int q = queuedLives.getOrDefault(offlinePlayer.getUniqueId(), 0);
+                int l = getLives(offlinePlayer) + q;
                 setLife(offlinePlayer, l);
                 queuedLives.remove(offlinePlayer.getUniqueId());
                 if (l > 0 && offlinePlayer.isOnline()) {
@@ -130,7 +132,7 @@ public class PlayerManager extends ConfigManager {
                         nmsPlayer.connection.send(packet);
                         bukkitPlayer.getInventory().setItemInMainHand(hand);
                     }
-                    bukkitPlayer.sendMessage(MessageUtils.getMessage("message.lives.more", l + ""));
+                    bukkitPlayer.sendMessage(MessageUtils.getMessage("message.lives.more", q + ""));
                 }
             }, 20 * 2);
         }

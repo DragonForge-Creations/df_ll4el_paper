@@ -20,6 +20,8 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncChatEvent e) {
 
+
+
         PartyManager partyManager = (PartyManager) DataManager.getConfigManager("parties");
         if (partyManager.inPartyChat(e.getPlayer())) {
             partyManager.handleChat(e.getPlayer(), e.message());
