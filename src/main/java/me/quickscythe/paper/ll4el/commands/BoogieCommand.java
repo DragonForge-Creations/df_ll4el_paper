@@ -1,8 +1,11 @@
 package me.quickscythe.paper.ll4el.commands;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import me.quickscythe.dragonforge.commands.CommandExecutor;
 import me.quickscythe.dragonforge.utils.CoreUtils;
 import me.quickscythe.dragonforge.utils.chat.Logger;
@@ -13,11 +16,13 @@ import me.quickscythe.paper.ll4el.utils.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
-
 
 
 public class BoogieCommand extends CommandExecutor {
@@ -34,6 +39,40 @@ public class BoogieCommand extends CommandExecutor {
 
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
+//        return literal(getName()).executes(context -> showUsage(context, "lastlife.boogie"))
+//                .then(literal("roll").executes(context -> {
+//                    CommandSender sender = context.getSource().getSender();
+//                    if (!sender.hasPermission("lastlife.boogie.roll"))
+//                        return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+//                    DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(1, true);
+//                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.roll", 1), sender);
+//                    return 1;
+//                }).then(argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
+//                    CommandSender sender = context.getSource().getSender();
+//                    if (!sender.hasPermission("lastlife.boogie.roll"))
+//                        return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+//
+//                    int amount = IntegerArgumentType.getInteger(context, "amount");
+//                    DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(amount, true);
+//                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.roll", amount), sender);
+//
+//                    return 1;
+//                })))
+//                .then(literal("set").executes(context -> showUsage(context, "lastlife.boogie.set"))
+//                        .then(argument("player", ArgumentTypes.players()).executes(context -> {
+//                            CommandSender sender = context.getSource().getSender();
+//                            if (!sender.hasPermission("lastlife.boogie.set"))
+//                                return logError(sender, MessageUtils.getMessage("cmd.error.no_perm"));
+//                            PlayerSelectorArgumentResolver targetSelector = context.getArgument("player", PlayerSelectorArgumentResolver.class);
+//                            List<Player> targets = targetSelector.resolve(context.getSource());
+//
+//                           targets.forEach(target -> {
+//                                DataManager.getConfigManager("players", PlayerManager.class).setBoogie(target);
+//                                CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.set", target.getName()), sender);
+//                            });
+//                           return 1;
+//                        }))
+//                ).build();
         return literal(getName()).executes(context -> logError(context.getSource().getSender(), MessageUtils.getMessage("cmd.boogie.usage"))).then(argument("action", StringArgumentType.string()).executes(context -> {
             CommandSender sender = context.getSource().getSender();
             String action = StringArgumentType.getString(context, "action");
@@ -41,6 +80,14 @@ public class BoogieCommand extends CommandExecutor {
                 if (sender.hasPermission("lastlife.boogie.stop")) {
                     DataManager.getConfigManager("boogies", BoogieManager.class).stop();
                     CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.stop"), sender);
+                }
+            }
+
+            if (action.equalsIgnoreCase("start")) {
+                //TODO
+                if (sender.hasPermission("lastlife.boogie.stop")) {
+                    DataManager.getConfigManager("boogies", BoogieManager.class).startBoogies();
+                    CoreUtils.logger().log(Logger.LogLevel.INFO, "Boogie", MessageUtils.getMessage("cmd.boogie.start"), sender);
                 }
             }
             if (action.equalsIgnoreCase("roll")) {

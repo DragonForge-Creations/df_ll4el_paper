@@ -32,6 +32,8 @@ public class Utils {
 
     private static Initializer plugin;
 
+    private static MainTimer timer;
+
     public static void init(Initializer plugin) {
         Utils.plugin = plugin;
         DataManager.registerConfigManager(new PlayerManager(plugin));
@@ -67,7 +69,13 @@ public class Utils {
             }
         });
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new MainTimer(), 0);
+        timer = new MainTimer();
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, timer, 0);
+    }
+
+    public static MainTimer timer(){
+        return timer;
     }
 
     private static void registerRecipes() {

@@ -6,6 +6,7 @@ import me.quickscythe.dragonforge.utils.config.Config;
 import me.quickscythe.dragonforge.utils.config.ConfigFileManager;
 import me.quickscythe.dragonforge.utils.storage.ConfigManager;
 import me.quickscythe.dragonforge.utils.storage.DataManager;
+import me.quickscythe.paper.ll4el.utils.Utils;
 import me.quickscythe.paper.ll4el.utils.timers.BoogieTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -73,5 +74,14 @@ public class BoogieManager extends ConfigManager {
 
     public void stop(){
         stop = true;
+    }
+
+    public boolean stopped(){
+        return stop;
+    }
+
+    public void startBoogies() {
+        stop = false;
+        Utils.timer().forceUpdateBoogies(0);
     }
 }

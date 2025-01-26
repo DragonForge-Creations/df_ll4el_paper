@@ -34,7 +34,7 @@ public class DonorDriveApi {
     private static ConfigFile config;
     private static ConfigFile processedDonations;
 
-    private static int queuedBoogies = 0;
+//    private static int queuedBoogies = 0;
 
     private static DonationListener donationListener;
 
@@ -167,6 +167,11 @@ public class DonorDriveApi {
     }
 
     public static void rollBoogies() {
+        BoogieManager boogieManager = (BoogieManager) DataManager.getConfigManager("boogies");
+        if(boogieManager.stopped()) return;
+        if(!boogieManager.config().getData().has("queuedBoogies"))
+            boogieManager.config().getData().put("queuedBoogies", 0);
+        int queuedBoogies = DataManager.getConfigManager("boogies", BoogieManager.class).config().getData().getInt("queuedBoogies");
         DataManager.getConfigManager("boogies", BoogieManager.class).rollBoogies(queuedBoogies, true);
 
 
@@ -179,8 +184,8 @@ public class DonorDriveApi {
         } catch (QuickException e) {
             CoreUtils.logger().log(Logger.LogLevel.ERROR, "DonationProcessor", "Couldn't send boogie webhook.");
         }
-
-        queuedBoogies = 0;
+        boogieManager.config().getData().put("queuedBoogies", 0);
+        boogieManager.config().save();
     }
 
     public static void queueBoogie() {
@@ -188,7 +193,11 @@ public class DonorDriveApi {
     }
 
     public static void queueBoogies(int amount) {
-        queuedBoogies = queuedBoogies + amount;
+        BoogieManager boogieManager = (BoogieManager) DataManager.getConfigManager("boogies");
+        if(!boogieManager.config().getData().has("queuedBoogies"))
+            boogieManager.config().getData().put("queuedBoogies", 0);
+        boogieManager.config().getData().put("queuedBoogies", boogieManager.config().getData().getInt("queuedBoogies") + amount);
+        boogieManager.config().save();
     }
 
     public static OfflinePlayer getOfflinePlayer(long participantId) {

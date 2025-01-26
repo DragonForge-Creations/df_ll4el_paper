@@ -12,6 +12,8 @@ import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static net.kyori.adventure.text.Component.text;
@@ -24,6 +26,8 @@ public class MainTimer implements Runnable {
     private long lastBoogieUpdate = 0;
     private boolean boogieStarted = false;
 
+    private Optional<Long> lastBoogieForceUpdate =Optional.empty();
+
     public MainTimer() {
         this.playerManager = (PlayerManager) DataManager.getConfigManager("players");
 
@@ -31,8 +35,8 @@ public class MainTimer implements Runnable {
 
     @Override
     public void run() {
-
         long now = System.currentTimeMillis();
+        lastBoogieForceUpdate.ifPresent(aLong -> lastBoogieUpdate = aLong);
         if (now - lastApiUpdate >= TimeUnit.MILLISECONDS.convert(DonorDriveApi.getDonorTime(), TimeUnit.MINUTES)) {
             lastApiUpdate = now;
             DonorDriveApi.processDonations();
@@ -61,5 +65,9 @@ public class MainTimer implements Runnable {
             }
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(Utils.plugin(), this, 0);
+    }
+
+    public void forceUpdateBoogies(long time){
+        lastBoogieForceUpdate = Optional.of(time);
     }
 }
